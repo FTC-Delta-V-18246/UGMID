@@ -166,7 +166,7 @@ public class hood {
                 pusher.setPosition(leftPusherPos);
                 if(retractTime.milliseconds()>2*rinterval) {
                     retracted = true;
-                } // tester
+                } //intellij
             }
         }
         opModeObj.telemetry.addData("Shots",shots);
