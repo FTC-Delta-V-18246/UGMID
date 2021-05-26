@@ -42,13 +42,12 @@
      public intake roller;
      public static double feeder = .3;
      boolean turning = false;
-     public static RobotState shooterState;
+     public static RobotState shooterState = RobotState.INDEXING;;
      private ElapsedTime runtime = new ElapsedTime();
 
      @RequiresApi(api = Build.VERSION_CODES.N)
      public void runOpMode() {
 
-         shooterState = RobotState.INDEXING;
 
          hardwareGenerator gen = new hardwareGenerator(this);
          subsystemGenerator subs = new subsystemGenerator(this, gen, runtime);
