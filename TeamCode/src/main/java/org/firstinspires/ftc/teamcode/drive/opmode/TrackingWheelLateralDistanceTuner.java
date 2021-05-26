@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
+import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 
 /**
  * Opmode designed to assist the user in tuning the `StandardTrackingWheelLocalizer`'s
@@ -68,6 +69,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        hardwareGenerator gen = new hardwareGenerator(this);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
@@ -104,7 +106,13 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             double heading = drive.getPoseEstimate().getHeading();
             double deltaHeading = heading - lastHeading;
 
-            headingAccumulator += Angle.normDelta(deltaHeading);
+
+            if(Angle.normDelta(deltaHeading)<0){
+                headingAccumulator+= StandardTrackingWheelLocalizer.R_MULTIPLIER*Angle.normDelta(deltaHeading);
+            }
+            else{
+                headingAccumulator += Angle.normDelta(deltaHeading);
+            }
             lastHeading = heading;
 
             telemetry.clearAll();

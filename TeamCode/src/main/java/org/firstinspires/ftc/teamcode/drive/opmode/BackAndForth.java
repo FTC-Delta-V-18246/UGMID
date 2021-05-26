@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -32,6 +33,7 @@ public class BackAndForth extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        hardwareGenerator gen = new hardwareGenerator(this);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory trajectoryForward = drive.trajectoryBuilder(new Pose2d())

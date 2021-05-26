@@ -1,0 +1,42 @@
+package org.firstinspires.ftc.teamcode.subSystems;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subSystems.retired.bulk;
+import org.firstinspires.ftc.teamcode.subSystems.retired.drive;
+
+@Config
+public class subsystemGenerator {
+
+    public drive vroomer;
+    public bulk reader;
+    public hood shooter;
+    public org.firstinspires.ftc.teamcode.subSystems.reader hardReader;
+    public intake roller; //
+    public hardwareGenerator support;
+    public SampleMecanumDrive driver;
+    public vision camera;
+    public wobble hammer;
+    public LinearServo angler;
+    public static double fireSpeed = 20;
+
+
+    public subsystemGenerator(LinearOpMode opMode, hardwareGenerator hard, ElapsedTime timer){
+        support = hard;
+        angler = new LinearServo(hard);
+        shooter = new hood(opMode, support, angler, fireSpeed,.6,0,0,0.025 );   // .4, .05, .07, .0299
+        driver = new SampleMecanumDrive(opMode.hardwareMap);
+        hardReader = new reader(opMode, hard, driver, timer);
+        vroomer = new drive(opMode, hard, driver, shooter, timer);
+        roller = new intake(opMode,support);
+        camera = new vision(opMode);
+        hammer = new wobble(opMode,support);
+
+
+
+    }
+
+}
