@@ -42,12 +42,13 @@
      public intake roller;
      public static double feeder = .3;
      boolean turning = false;
+     public static RobotState shooterState;
      private ElapsedTime runtime = new ElapsedTime();
 
      @RequiresApi(api = Build.VERSION_CODES.N)
      public void runOpMode() {
 
-         RobotState shooterState = RobotState.INDEXING;
+         shooterState = RobotState.INDEXING;
 
          hardwareGenerator gen = new hardwareGenerator(this);
          subsystemGenerator subs = new subsystemGenerator(this, gen, runtime);
@@ -90,6 +91,7 @@
                      subs.angler.toPosition(feeder);
                      subs.hammer.lift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
+                     shooter.timedCancel();
                      break;
 
                  case HIGH:
@@ -98,10 +100,6 @@
                      if (!driver.isBusy() && gamepad1.right_bumper) {
                          shooter.timedFireN(hardReader.shooterV);
                      }else {
-                         shooter.timedCancel();
-                     }
-                     if(shooter.shots>3){
-                         shooterState = RobotState.INDEXING;
                          shooter.timedCancel();
                      }
                      if(gamepad1.left_bumper){

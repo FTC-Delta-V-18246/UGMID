@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.UGBuildSeason.tele;
 import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
@@ -156,10 +157,14 @@ public class hood {
             }
         }else{
             if (retractTime.milliseconds() > rinterval) {
+                if(shots == 3){
+                    tele.shooterState = tele.RobotState.INDEXING;
+                    timedCancel();
+                }
                 pusher.setPosition(leftPusherPos);
                 if(retractTime.milliseconds()>2*rinterval) {
                     retracted = true;
-                }
+                } // tester
             }
         }
         opModeObj.telemetry.addData("Shots",shots);
