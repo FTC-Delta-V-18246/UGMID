@@ -23,7 +23,7 @@ public class hood {
         private Servo pusher;
         private DigitalChannel limitSwitch;
         public static double leftPusherPos = .215;
-        public static double rightPusherPos = .31;
+        public static double rightPusherPos = .3;
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
         public static double feedAngle = .323;
@@ -34,6 +34,7 @@ public class hood {
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
+        public boolean done = false;
         ElapsedTime shooterTime = new ElapsedTime();
         ElapsedTime retractTime = new ElapsedTime();
         private PIDMath flyWheel;
@@ -158,6 +159,7 @@ public class hood {
         }else{
             if (retractTime.milliseconds() > rinterval) {
                 if(shots == 3){
+                    done = true;
                     tele.shooterState = tele.RobotState.INDEXING;
                     timedCancel();
                 }
@@ -182,6 +184,7 @@ public class hood {
             pusher.setPosition(rightPusherPos);
             shots++;
             retractTime.reset();
+            done = false;
             retracted = false;
 
         }
