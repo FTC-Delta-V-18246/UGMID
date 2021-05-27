@@ -23,14 +23,14 @@ public class hood {
         private Servo pusher;
         private DigitalChannel limitSwitch;
         public static double leftPusherPos = .215;
-        public static double rightPusherPos = .29; //.3
+        public static double rightPusherPos = .31; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
         public static double feedAngle = .323;
         public static double interval = 150;
-        public static double rinterval = 45; // minimum of 45
-        public static double veloRange = 2; //max of 2, probably could be increased if we increased rinterval
-        public static double shooterHeight = .275;
+        public static double rinterval = 57; // minimum of 45 (realistically 55)
+        public static double veloRange = 1.5; //max of 3, probably could be increased if we increased rinterval
+        public static double shooterHeight = .3;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;

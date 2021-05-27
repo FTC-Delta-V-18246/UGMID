@@ -1,4 +1,4 @@
- package org.firstinspires.ftc.teamcode.UGBuildSeason;
+  package org.firstinspires.ftc.teamcode.UGBuildSeason;
 
  import android.os.Build;
 
@@ -175,10 +175,10 @@
 
              if(!gamepad1.left_bumper&&shooterState== RobotState.INDEXING){
                  roller.fallOut();
-              //   roller.upToSpeed();
+                 roller.upToSpeed();
              }
              else if(gamepad1.right_bumper&&shooterState== RobotState.INDEXING){
-              //   roller.upToSpeed(-.8);
+                 roller.upToSpeed(-.8);
                  roller.tuckIn();
              }
              else{
