@@ -41,7 +41,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double R_MULTIPLIER = (3600.0)/(3600.0+R_ERROR);
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
-
+//
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
