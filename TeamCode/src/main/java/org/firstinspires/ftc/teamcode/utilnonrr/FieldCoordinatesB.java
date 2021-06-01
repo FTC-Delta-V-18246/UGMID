@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.utilnonrr;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import org.firstinspires.ftc.teamcode.geometry.Point;
 
 @Config
@@ -11,7 +13,20 @@ public class FieldCoordinatesB {
     public static Point PL = new Point(72, 26);
     public static Point PM = new Point(72, 19);
     public static Point PR = new Point(72, 11);
-    private double toInches = 1/25.4;
+    public static Pose2d WAI = new Pose2d(-2, 63);
+    public static Pose2d WAII = new Pose2d(-12, 60, 0);
+    public static Pose2d WBI = new Pose2d(21, 39);
+    public static Pose2d WBII = new Pose2d(15, 38, 0);
+    public static Pose2d WCI = new Pose2d(44, 62);
+    public static Pose2d WCII = new Pose2d(-12, 60, 0);
+    public static Pose2d WPU  =  new Pose2d(-30, 24, Math.PI);
+    public static Pose2d PAR = new Pose2d(12,12);
+    public static Pose2d PAM = new Pose2d(12,36);
+    public static Pose2d PAL = new Pose2d(12,60);
+    public static Pose2d PRLB = new Pose2d(-16, 36,0);
+    public static Pose2d PRLC = new Pose2d(-16, 36,0);
+    public static Pose2d PS = new Pose2d(-18,18,0);
+
     public FieldCoordinatesB()
     {
         //HM = new Point(72,32);

@@ -33,7 +33,7 @@ import java.util.Arrays;
 
 @Autonomous
 @Config
-public class autoLeagues extends LinearOpMode {
+public class B119 extends LinearOpMode {
 
     public SampleMecanumDrive driver;
     public reader hardReader;
@@ -43,7 +43,7 @@ public class autoLeagues extends LinearOpMode {
     public wobble hammer;
     public static double feeder = .3;
 
-    enum State {
+    private enum State {
         wobbleF,
         power,
         stack,

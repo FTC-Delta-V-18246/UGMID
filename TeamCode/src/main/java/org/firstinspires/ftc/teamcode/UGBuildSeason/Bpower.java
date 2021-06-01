@@ -1,24 +1,29 @@
 package org.firstinspires.ftc.teamcode.UGBuildSeason;
 
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.hood;
-import org.firstinspires.ftc.teamcode.subSystems.intake;
-import org.firstinspires.ftc.teamcode.subSystems.reader;
-import org.firstinspires.ftc.teamcode.subSystems.vision;
-import org.firstinspires.ftc.teamcode.subSystems.wobble;
+import org.firstinspires.ftc.teamcode.subSystems.*;
+import org.firstinspires.ftc.teamcode.util.wait;
+import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
+
+import java.util.Arrays;
 
 @Autonomous
 @Config
-public class OneSixFour extends LinearOpMode {
+public class Bpower extends LinearOpMode {
 
     public SampleMecanumDrive driver;
     public reader hardReader;
@@ -27,21 +32,13 @@ public class OneSixFour extends LinearOpMode {
     public vision camera;
     public wobble hammer;
 
-    enum State {
+    private enum State {
         dTPO,
         P,
         dTWD,
         WD,
         dTS,
         S,
-        dTIS,
-        IS,
-        dTISI,
-        ISI,
-        dTWPI,
-        WPI,
-        dTWDI,
-        WDI,
         dTPA,
         idle,
     }
@@ -55,7 +52,7 @@ public class OneSixFour extends LinearOpMode {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void runOpMode() throws InterruptedException {
-        /*
+
         wait timer;
         wait timer2;
         boolean timerDone = false;
@@ -74,7 +71,7 @@ public class OneSixFour extends LinearOpMode {
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
         Trajectory power = driver.trajectoryBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-9, 36))
+                .lineToConstantHeading(field.PS.vec())
                 .build();
 
 
@@ -84,12 +81,6 @@ public class OneSixFour extends LinearOpMode {
         Trajectory bounceBack0 = driver.trajectoryBuilder(wobbleA.end())
                 .lineToSplineHeading(new Pose2d(-22, 36, Math.PI))
                 .build();
-        Trajectory wobbleAI = driver.trajectoryBuilder(bounceBack0.end())
-                .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
-                .build();
-        Trajectory wobbleADI = driver.trajectoryBuilder(wobbleAI.end())
-                .lineToSplineHeading(new Pose2d(-12, 60, 0))
-                .build();
 
 
         Trajectory wobbleB = driver.trajectoryBuilder(power.end())
@@ -97,33 +88,21 @@ public class OneSixFour extends LinearOpMode {
                 .build();
         Trajectory bounceBack1 = driver.trajectoryBuilder(wobbleB.end())
                 .build();
-        Trajectory wobbleBI = driver.trajectoryBuilder(intakeT.end())
-                .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
-                .build();
-        Trajectory wobbleBDI = driver.trajectoryBuilder(wobbleBI.end())
-                .lineToSplineHeading(new Pose2d(15, 38, 0))
-                .build();
 
         Trajectory wobbleC = driver.trajectoryBuilder(power.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
         Trajectory bounceBack4 = driver.trajectoryBuilder(wobbleB.end())
                 .build();
-        Trajectory wobbleCI = driver.trajectoryBuilder(intakeO.end())
-                .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
-                .build();
-        Trajectory wobbleCDI = driver.trajectoryBuilder(wobbleCI.end())
-                .lineToSplineHeading(new Pose2d(35, 62, 0))
-                .build();
 
-        Trajectory parkA = driver.trajectoryBuilder(wobbleAC.end())
+        Trajectory parkA = driver.trajectoryBuilder(bounceBack0.end())
                 .splineToConstantHeading(new Vector2d(-10,30),0)
                 .splineToConstantHeading(new Vector2d(10, 30),0)
                 .build();
-        Trajectory parkB = driver.trajectoryBuilder(wobbleBC.end())
+        Trajectory parkB = driver.trajectoryBuilder(bounceBack1.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
-        Trajectory parkC = driver.trajectoryBuilder(wobbleCC.end())
+        Trajectory parkC = driver.trajectoryBuilder(bounceBack4.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
 
@@ -131,7 +110,7 @@ public class OneSixFour extends LinearOpMode {
         hammer.grab();
         hammer.lift();
         waitForStart();
-        double stack;
+        int stack = 0;
         wait vision = new wait(runtime, .5);
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
@@ -140,9 +119,10 @@ public class OneSixFour extends LinearOpMode {
         telemetry.update();
         roller.fallOut();
         runtime.reset();
+        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);;
         State currentState = State.dTPO;
-        PowerShot power = PowerShot.L;
-        driver.followTrajectoryAsync(); //drive to powershots
+        PowerShot powerS = PowerShot.L;
+        driver.followTrajectoryAsync(power); //drive to powershots
         while (!isStopRequested() && opModeIsActive()) {
             hardReader.autonRead();
             Pose2d curPose = hardReader.curPose;
@@ -158,7 +138,7 @@ public class OneSixFour extends LinearOpMode {
                     //turn shooter on during P
                     shooter.raiseToAngle(.02+shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose, false));
                     if(!driver.isBusy()){
-                        switch(power){
+                        switch(powerS){
                             case L:
                                 driver.turnAsync(field.PL);
                             break;
@@ -172,14 +152,15 @@ public class OneSixFour extends LinearOpMode {
                     }
                     if(!driver.isBusy()){
                         shooter.fire(hardReader.shooterV);
-                        switch(power){
+                        switch(powerS){
                             case L:
-                                power = PowerShot.M;
+                                powerS = PowerShot.M;
                                 break;
                             case M:
-                                power = PowerShot.R;
+                                powerS = PowerShot.R;
                                 break;
                             case R:
+                                roller.upToSpeed();
                                 switch(stack){
                                     case 0:
                                         //drive to zone A
@@ -200,7 +181,7 @@ public class OneSixFour extends LinearOpMode {
                     }
                     break;
                 case dTWD:
-                    wait wobbleDrop = new wait(runtime,.2);
+                    wobbleDrop = new wait(runtime,.2);
                     if(!driver.isBusy()){
                         hammer.lowLift();
                         currentState = State.WD;
@@ -212,15 +193,15 @@ public class OneSixFour extends LinearOpMode {
                         roller.upToSpeed(); //turn on roller for bounceback
                         switch(stack){
                             case 0:
-                                //bounceback then drive to center
+                                //bounceback then drive to shoot
                                 driver.followTrajectoryAsync(bounceBack0);
                                 break;
                             case 1:
-                                //bounceback then drive infront of stack
+                                //bounceback then drive to shoot
                                 driver.followTrajectoryAsync(bounceBack1);
                                 break;
                             case 4:
-                                //bounceback then drive infront of stack
+                                //bounceback then drive to shoot
                                 driver.followTrajectoryAsync(bounceBack4);
                         }
                         currentState = State.dTS;
@@ -234,80 +215,23 @@ public class OneSixFour extends LinearOpMode {
                 break;
                 case S:
                     shooter.timedFireN(hardReader.shooterV); //turn on shooter during S
-                    if(shooter.shots>2){
+                    if(shooter.done){
                         switch(stack){
                             case 0:
-                                //drive to pickup wobble
-                                driver.followTrajectoryAsync(wobbleAI);
-                                currentState = State.dTWPI;
-                            break;
+                                //park
+                                driver.followTrajectoryAsync(parkA);
+                                break;
                             case 1:
+                                //park
+                                driver.followTrajectoryAsync(parkB);
+                                break;
                             case 4:
-                                //drive to intake the stack, slow speed
-                                roller.upToSpeed();
-                                currentState = State.dTIS;
-                            break;
+                                //park
+                                driver.followTrajectoryAsync(parkC);
+                                break;
                         }
 
                     }
-                break;
-                case dTIS:
-                    if(!driver.isBusy()){
-                        roller.upToSpeed(0);
-                        currentState = State.IS;
-                    }
-                break;
-                case IS:
-                    shooter.timedFireN(hardReader.shooterV); //turn on shooter during IS
-                    if(shooter.shots>2){
-                        switch(stack){
-                            case 1:
-                                //drive to pickup wobble
-                                currentState = State.dTWPI;
-                            break;
-                            case 4:
-                                //drive to intake the stack, slow speed
-                                roller.upToSpeed();
-                                currentState = State.dTISI;
-                            break;
-                        }
-                    }
-                break;
-                case dTISI:
-                    if(!driver.isBusy()){
-                        roller.upToSpeed(0);
-                        currentState = State.ISI;
-                    }
-                break;
-                case ISI:
-                    shooter.timedFireN(hardReader.shooterV); //turn on shooter during ISI
-                    if(shooter.shots>2){
-                        //drive to pickup wobble
-                        currentState = State.dTWPI;
-                    }
-                break;
-                case dTWPI:
-                    wait wobbleGrab = new wait(runtime, .4);
-                    if(!driver.isBusy()){
-                        hammer.grab();
-                        currentState = State.WPI;
-                    }
-                break;
-                case WPI:
-                    if(wobbleGrab.timeUp()){
-                        //drive to drop wobble
-                        currentState = State.dTWDI;
-                    }
-                break;
-                case dTWDI:
-                    if(!driver.isBusy()){
-                        currentState = State.WDI;
-                    }
-                break;
-                case WDI:
-                    hammer.release();
-                    //drive to park
-                    currentState = State.dTPA;
                 break;
                 case dTPA:
                     if(!driver.isBusy()){
@@ -320,7 +244,7 @@ public class OneSixFour extends LinearOpMode {
                     roller.fallOut();
                 break;
             }
-                    if (currentState == State.S || currentState == State.IS|| currentState == State.ISI|| currentState == State.P) {
+                    if (currentState == State.S || currentState == State.P) {
                         shooter.upToSpeed(hardReader.shooterV, runtime.seconds());
                     } else {
                         gen.flyWheelM.setPower(0);
@@ -333,7 +257,7 @@ public class OneSixFour extends LinearOpMode {
                     telemetry.update();
             }
 
-         */
+
         }
 
 
