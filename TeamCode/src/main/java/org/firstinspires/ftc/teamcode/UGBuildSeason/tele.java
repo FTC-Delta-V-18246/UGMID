@@ -102,7 +102,7 @@
                          shooter.timedCancel();
                      }
                      if(gamepad1.left_bumper){
-                         driver.turnAsync(field.HM);
+                         //driver.turnAsync(field.HM);
                          turning = true;
                      }else{
                          turning = false;

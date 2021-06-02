@@ -86,7 +86,7 @@ public class Bbasic extends LinearOpMode {
         this.hardReader = subs.hardReader;
 
         FieldCoordinatesB field = new FieldCoordinatesB();
-        Pose2d startPose = new Pose2d(-64,25, 0);
+        Pose2d startPose = new Pose2d(-64,49, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
 
@@ -94,22 +94,23 @@ public class Bbasic extends LinearOpMode {
                 .lineToSplineHeading(field.WAI)
                 .build();
         Trajectory preLA = driver.trajectoryBuilder(wobbleA.end())
-                .lineToConstantHeading(field.PRLB.vec())
+                .lineToConstantHeading(field.PRLC.vec())
                 .build();
 
 
         Trajectory wobbleB = driver.trajectoryBuilder(startPose)
-                .lineToSplineHeading(field.WBI)
+                .splineToConstantHeading(new Vector2d(-12, 50),0)
+                .splineToSplineHeading(field.WBI,0)
                 .build();
         Trajectory preLB = driver.trajectoryBuilder(wobbleB.end())
-                .lineToConstantHeading(field.PRLB.vec())
+                .lineToConstantHeading(field.PRLC.vec())
                 .build();
 
         Trajectory wobbleC = driver.trajectoryBuilder(startPose)
                 .lineToSplineHeading(field.WCI)
                 .build();
         Trajectory preLC = driver.trajectoryBuilder(wobbleC.end())
-                .lineToConstantHeading(field.PRLB.vec())
+                .lineToConstantHeading(field.PRLC.vec())
                 .build();
 
         Trajectory intakeI = driver.trajectoryBuilder(preLC.end())
@@ -140,6 +141,7 @@ public class Bbasic extends LinearOpMode {
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
+        shooter.timedCancel();
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
         }
@@ -167,7 +169,7 @@ public class Bbasic extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.2);
+                    wobbleDrop = new wait(runtime,.8);
                     if(!driver.isBusy()){
                         hammer.lowLift();
                         currentState = State.WD;
@@ -209,6 +211,7 @@ public class Bbasic extends LinearOpMode {
                             case 1:
                             case 4:
                                 //drive to intake the stack, slow speed
+                                driver.followTrajectoryAsync(intakeI);
                                 roller.upToSpeed();
                                 currentState = State.dTIS;
                                 break;
@@ -228,10 +231,13 @@ public class Bbasic extends LinearOpMode {
                             case 1:
                                 //park
                                 driver.followTrajectoryAsync(parkB);
+                                shooter.timedCancel();
                                 currentState = State.dTPA;
                                 break;
                             case 4:
                                 //drive to intake the stack, slow speed
+                                shooter.timedCancel();
+                                driver.followTrajectoryAsync(intakeII);
                                 roller.upToSpeed();
                                 currentState = State.dTISI;
                                 break;

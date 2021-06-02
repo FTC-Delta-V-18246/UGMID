@@ -111,8 +111,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private Pose2d lastPoseOnTurn;
 
     //public static double kPR = 0, kDR = 0;
-    public static double turnAccept = .5;
-    public static double kP = 1.1, kD = .2, kF = .15;   //.5,0,.2
+    public static double turnAccept = 5;
+    public static double kP = .3, kD = 0, kF = .2;   //.5,0,.2
     public static PIDMath rotation= new PIDMath(kP,0, kD);
     private double targetAngleCustom;
     private Point targetPointCustom;
@@ -442,7 +442,31 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     }
     public void driveFieldCentric(double leftStickX, double leftStickY, double angle){
-        double rightStickX = turnStrafe;
+        double gain = 0;
+        try{
+            if(/*targetPointCustom!=null&&*/Math.abs(turnToAbsolute(targetPointCustom,getPoseEstimate()))>Math.toRadians(turnAccept)) {
+                gain = rotation.calculateGain(turnToAbsolute(targetPointCustom, getPoseEstimate()), clock.seconds());
+            }else {
+                // targetAngleCustom = 23923904;
+                targetPointCustom = null;
+                turnStrafe = 0;
+                gain = 0;
+                mode = Mode.IDLE;
+            }
+        }
+        catch(NullPointerException e){
+            targetPointCustom = FieldCoordinatesB.HM;
+            if(/*targetPointCustom!=null&&*/Math.abs(turnToAbsolute(targetPointCustom,getPoseEstimate()))>Math.toRadians(turnAccept)) {
+                gain = rotation.calculateGain(turnToAbsolute(targetPointCustom, getPoseEstimate()), clock.seconds());
+            }else {
+                // targetAngleCustom = 23923904;
+                targetPointCustom = null;
+                turnStrafe = 0;
+                gain = 0;
+                mode = Mode.IDLE;
+            }
+        }
+        double rightStickX = gain;
         org.firstinspires.ftc.teamcode.geometry.Vector2d initial = new Vector2d(leftStickX,leftStickY);
         initial =  initial.rotateBy(-angle);
         //double theta = Math.atan2(leftStickX,leftStickY);

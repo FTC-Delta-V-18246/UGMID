@@ -26,11 +26,11 @@ public class hood {
         public static double rightPusherPos = .31; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
-        public static double feedAngle = .323;
+        public static double feedAngle = .323; //
         public static double interval = 150;
-        public static double rinterval = 57; // minimum of 45 (realistically 55)
+        public static double rinterval = 70; // minimum of 45 (realistically 55)
         public static double veloRange = 1.5; //max of 3, probably could be increased if we increased rinterval
-        public static double shooterHeight = .3;
+        public static double shooterHeight = .23;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -61,7 +61,7 @@ public class hood {
             if(!power){
                 return shooterHeight;//4.8562549*Math.pow(10,-5)*Math.pow(distance,2)-.0111655012*distance+1.18951049;
             }else{
-                return .235;
+                return .16;
             }
         }
         public void raiseToAngle(double angle){

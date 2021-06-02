@@ -83,7 +83,7 @@ public class Bcomplex extends LinearOpMode {
 
 
         Trajectory parkA = driver.trajectoryBuilder(wobbleA.end())
-                .splineToConstantHeading(field.PAL.vec(),0)
+                .lineToConstantHeading(field.PAL.vec())
                 .build();
         Trajectory parkB = driver.trajectoryBuilder(wobbleB.end())
                 .lineToConstantHeading(field.PAL.vec())
@@ -98,6 +98,7 @@ public class Bcomplex extends LinearOpMode {
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
+        shooter.timedCancel();
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
         }
@@ -106,7 +107,7 @@ public class Bcomplex extends LinearOpMode {
         roller.fallOut();
         runtime.reset();
         wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);;
-        State currentState = State.dTWD;
+        State currentState = State.dTS;
                 driver.followTrajectoryAsync(preL);
         while (!isStopRequested() && opModeIsActive()) {
             hardReader.autonRead();
@@ -115,26 +116,29 @@ public class Bcomplex extends LinearOpMode {
             switch (currentState) {
                 case dTS:
                     if(!driver.isBusy()){
+                        driver.turnAsync(field.HM);
                         currentState = State.S;
                     }
                     break;
                 case S:
-                    shooter.timedFireN(hardReader.shooterV); //turn on shooter during S
-                    if(shooter.done){
-                        switch(stack){
-                            case 0:
-                                //drive to wobble
-                                driver.followTrajectoryAsync(wobbleA);
-                                break;
-                            case 1:
-                                //drive to wobble
-                                driver.followTrajectoryAsync(wobbleB);
-                                break;
-                            case 4:
-                                //drive to wobble
-                                driver.followTrajectoryAsync(wobbleC);
+                    if(!driver.isBusy()) {
+                            shooter.timedFireN(hardReader.shooterV); //turn on shooter during S
+                        if(shooter.done) {
+                            switch (stack) {
+                                case 0:
+                                    //drive to wobble
+                                    driver.followTrajectoryAsync(wobbleA);
+                                    break;
+                                case 1:
+                                    //drive to wobble
+                                    driver.followTrajectoryAsync(wobbleB);
+                                    break;
+                                case 4:
+                                    //drive to wobble
+                                    driver.followTrajectoryAsync(wobbleC);
+                            }
+                            currentState = State.dTWD;
                         }
-                        currentState = State.dTWD;
                     }
                     break;
                 case dTWD:

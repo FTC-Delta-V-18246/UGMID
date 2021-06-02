@@ -92,25 +92,25 @@ public class B164 extends LinearOpMode {
         this.hardReader = subs.hardReader;
 
         FieldCoordinatesB field = new FieldCoordinatesB();
-        Pose2d startPose = new Pose2d(-64,25, 0);
+        Pose2d startPose = new Pose2d(-64,24, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
         Trajectory power = driver.trajectoryBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-9, 36))
+                .lineToConstantHeading(new Vector2d(-9, 20))
                 .build();
 
 
         Trajectory wobbleA = driver.trajectoryBuilder(power.end())
-                .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
+                .lineToConstantHeading(new Vector2d(-6, 61))
                 .build();
         Trajectory bounceBack0 = driver.trajectoryBuilder(wobbleA.end())
-                .lineToSplineHeading(new Pose2d(-22, 36, Math.PI))
+                .lineToSplineHeading(new Pose2d(-22, 36, 0))
                 .build();
         Trajectory wobbleAI = driver.trajectoryBuilder(bounceBack0.end())
-                .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
+                .lineToSplineHeading(new Pose2d(-29, 47.5, Math.PI+Math.toRadians(9)))
                 .build();
         Trajectory wobbleADI = driver.trajectoryBuilder(wobbleAI.end())
-                .lineToSplineHeading(new Pose2d(-12, 60, 0))
+                .lineToSplineHeading(new Pose2d(-12, 58, 0))
                 .build();
 
 
@@ -118,11 +118,10 @@ public class B164 extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
         Trajectory bounceBack1 = driver.trajectoryBuilder(wobbleB.end())
+                .lineToConstantHeading(new Vector2d(-15, 36))
                 .build();
         Trajectory intakeI = driver.trajectoryBuilder(bounceBack1.end())
-                .lineToConstantHeading(new Vector2d(-22, 36), new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
-                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToConstantHeading(new Vector2d(-22, 36))
                 .build();
         Trajectory wobbleBI = driver.trajectoryBuilder(intakeI.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
@@ -135,11 +134,10 @@ public class B164 extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
         Trajectory bounceBack4 = driver.trajectoryBuilder(wobbleB.end())
+                .lineToConstantHeading(new Vector2d(-15, 36))
                 .build();
         Trajectory intakeII = driver.trajectoryBuilder(intakeI.end())
-                .lineToConstantHeading(new Vector2d(-30, 36), new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
-                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToConstantHeading(new Vector2d(-30, 36))
                 .build();
         Trajectory wobbleCI = driver.trajectoryBuilder(intakeII.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
@@ -148,14 +146,14 @@ public class B164 extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(35, 62, 0))
                 .build();
 
-        Trajectory parkA = driver.trajectoryBuilder(wobbleAI.end())
-                .splineToConstantHeading(new Vector2d(-10,30),0)
-                .splineToConstantHeading(new Vector2d(10, 30),0)
+        Trajectory parkA = driver.trajectoryBuilder(wobbleADI.end())
+                .splineToConstantHeading(new Vector2d(-20, 55),0)
+                .splineToConstantHeading(new Vector2d(1, 40),0)
                 .build();
-        Trajectory parkB = driver.trajectoryBuilder(wobbleAI.end())
+        Trajectory parkB = driver.trajectoryBuilder(wobbleBDI.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
-        Trajectory parkC = driver.trajectoryBuilder(wobbleAI.end())
+        Trajectory parkC = driver.trajectoryBuilder(wobbleCDI.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
 
@@ -165,6 +163,7 @@ public class B164 extends LinearOpMode {
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
+        wait rShot = new wait(runtime,.1);
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
         }
@@ -172,7 +171,7 @@ public class B164 extends LinearOpMode {
         telemetry.update();
         roller.fallOut();
         runtime.reset();
-        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);;
+        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2),pShot = new wait(runtime,.2);
         State currentState = State.dTPO;
         PowerShot powerS = PowerShot.L;
         driver.followTrajectoryAsync(power); //drive to powershots
@@ -184,6 +183,7 @@ public class B164 extends LinearOpMode {
                 case dTPO:
                     subs.angler.toPosition(.29);
                     if (!driver.isBusy()) {
+                            driver.turnAsync(field.PL);
                             currentState = State.P;
                     }
                     break;
@@ -193,47 +193,49 @@ public class B164 extends LinearOpMode {
                     if(!driver.isBusy()){
                         switch(powerS){
                             case L:
-                                driver.turnAsync(field.PL);
-                            break;
-                            case M:
-                                driver.turnAsync(field.PM);
-                            break;
-                            case R:
-                                driver.turnAsync(field.PR);
-                            break;
-                        }
-                    }
-                    if(!driver.isBusy()){
-                        shooter.fire(hardReader.shooterV);
-                        switch(powerS){
-                            case L:
-                                powerS = PowerShot.M;
-                                break;
-                            case M:
-                                powerS = PowerShot.R;
-                                break;
-                            case R:
-                                switch(stack){
-                                    case 0:
-                                        //drive to zone A
-                                        driver.followTrajectoryAsync(wobbleA);
-                                        break;
-                                    case 1:
-                                        //drive to zone B
-                                        driver.followTrajectoryAsync(wobbleB);
-                                    break;
-                                    case 4:
-                                        //drive to zone C
-                                        driver.followTrajectoryAsync(wobbleC);
-                                    break;
+                                if(shooter.shots!=0) {
+                                    powerS = PowerShot.M;
+                                    driver.turnAsync(field.PM);
                                 }
-                                currentState  = State.dTWD;
+                                break;
+                            case M:
+                                if(shooter.shots!=1) {
+                                    powerS = PowerShot.R;
+                                    driver.turnAsync(field.PR);
+                                }
+                                break;
+                            case R:
+                                if(shooter.shots!=2) {
+                                    switch (stack) {
+                                        case 0:
+                                            //drive to zone A
+                                            driver.followTrajectoryAsync(wobbleA);
+                                            break;
+                                        case 1:
+                                            //drive to zone B
+                                            driver.followTrajectoryAsync(wobbleB);
+                                            break;
+                                        case 4:
+                                            //drive to zone C
+                                            driver.followTrajectoryAsync(wobbleC);
+                                            break;
+                                    }
+                                    currentState = State.dTWD;
+                                }
                                 break;
                         }
+                        if(shooter.fire(hardReader.shooterV)&&pShot.timeUp()){
+                            shooter.shots++;
+                            pShot = new wait(runtime,.8);
+                            rShot = new wait(runtime,.1);
+                        };
+                    }
+                    if(rShot.timeUp()){
+                        gen.pusherServo.setPosition(hood.leftPusherPos);
                     }
                     break;
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.2);
+                    wobbleDrop = new wait(runtime,.4);
                     if(!driver.isBusy()){
                         hammer.lowLift();
                         currentState = State.WD;
@@ -271,6 +273,7 @@ public class B164 extends LinearOpMode {
                         switch(stack){
                             case 0:
                                 //drive to pickup wobble
+                                hammer.down();
                                 driver.followTrajectoryAsync(wobbleAI);
                                 currentState = State.dTWPI;
                             break;
@@ -296,6 +299,7 @@ public class B164 extends LinearOpMode {
                         switch(stack){
                             case 1:
                                 //drive to pickup wobble
+                                hammer.down();
                                 currentState = State.dTWPI;
                             break;
                             case 4:
@@ -320,7 +324,7 @@ public class B164 extends LinearOpMode {
                     }
                 break;
                 case dTWPI:
-                    wobbleGrab = new wait(runtime, .4);
+                    wobbleGrab = new wait(runtime, 1);
                     if(!driver.isBusy()){
                         hammer.grab();
                         currentState = State.WPI;
@@ -329,6 +333,17 @@ public class B164 extends LinearOpMode {
                 case WPI:
                     if(wobbleGrab.timeUp()){
                         //drive to drop wobble
+                        switch(stack){
+                            case 0:
+                                driver.followTrajectoryAsync(wobbleADI);
+                                break;
+                            case 1:
+                                driver.followTrajectoryAsync(wobbleBDI);
+                                break;
+                            case 4:
+                                driver.followTrajectoryAsync(wobbleCDI);
+                                break;
+                        }
                         currentState = State.dTWDI;
                     }
                 break;
@@ -338,8 +353,19 @@ public class B164 extends LinearOpMode {
                     }
                 break;
                 case WDI:
-                    hammer.release();
+                   hammer.release();
                     //drive to park
+                    switch(stack){
+                        case 0:
+                            driver.followTrajectoryAsync(parkA);
+                            break;
+                        case 1:
+                            driver.followTrajectoryAsync(parkB);
+                            break;
+                        case 4:
+                            driver.followTrajectoryAsync(parkC);
+                            break;
+                    }
                     currentState = State.dTPA;
                 break;
                 case dTPA:
