@@ -30,7 +30,7 @@ public class hood {
         public static double interval = 150;
         public static double rinterval = 70; // minimum of 45 (realistically 55)
         public static double veloRange = 1.5; //max of 3, probably could be increased if we increased rinterval
-        public static double shooterHeight = .23;
+        public static double shooterHeight = .26;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -190,4 +190,5 @@ public class hood {
         }
 
     }
+
 
