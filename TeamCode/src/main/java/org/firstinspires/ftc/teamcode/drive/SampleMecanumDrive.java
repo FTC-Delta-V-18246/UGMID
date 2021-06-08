@@ -111,7 +111,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private Pose2d lastPoseOnTurn;
 
     //public static double kPR = 0, kDR = 0;
-    public static double turnAccept = 5;
+    public static double turnAccept = 1;
     public static double kP = .3, kD = 0, kF = .2;   //.5,0,.2
     public static PIDMath rotation= new PIDMath(kP,0, kD);
     private double targetAngleCustom;
@@ -145,10 +145,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-
-        //for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
+        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
         //  module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        //}
+        }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         /*

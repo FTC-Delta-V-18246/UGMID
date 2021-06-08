@@ -56,7 +56,7 @@ public class reader {
     public void bulkManual(){
 
         for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+         //   module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
 
@@ -64,7 +64,7 @@ public class reader {
     public void bulkManualClear() {
 
         for (LynxModule module : opModeObj.hardwareMap.getAll(LynxModule.class)) {
-            module.clearBulkCache();
+         //   module.clearBulkCache();
         }
 
     }

@@ -11,8 +11,8 @@ public class intake {
     private DcMotorEx rollerMotorI = null;
     private Servo outerRollerServoLeft, outerRollerServoRight;
     private LinearOpMode opModeObj;
-    public static double O = .45  , I = .1;
-    public static double leftOffset = 0;
+    public static double O = .52  , I = .1;
+    public static double leftOffset = -.07;
     public static double intakePower = .9;
     public intake(LinearOpMode opMode, hardwareGenerator gen){
         opModeObj = opMode;

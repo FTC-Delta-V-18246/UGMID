@@ -95,14 +95,14 @@
 
                  case HIGH:
                      hood.goalVelo = 20;
-                     shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose,false));
+                     shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                      if (!driver.isBusy() && gamepad1.right_bumper) {
                          shooter.timedFireN(hardReader.shooterV);
                      }else {
                          shooter.timedCancel();
                      }
                      if(gamepad1.left_bumper){
-                         //driver.turnAsync(field.HM);
+                         driver.turnAsync(field.HM);
                          turning = true;
                      }else{
                          turning = false;
@@ -123,7 +123,8 @@
                      }else if(gamepad1.dpad_right){
                          driver.turnAsync(field.PR);
                          turning = true;
-                     }else{
+                     }
+                     if(!driver.isBusy()){
                          turning = false;
                      }
                         /*
@@ -164,7 +165,7 @@
              if(!turning) {
                  driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading()));
              }else{
-                 driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, Math.toDegrees(hardReader.curPose.getHeading()));
+                 //driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, Math.toDegrees(hardReader.curPose.getHeading()));
              }
              if (shooterState!= RobotState.HIGH&&shooterState!= RobotState.POWER) {
                  shooter.safetySwitch();

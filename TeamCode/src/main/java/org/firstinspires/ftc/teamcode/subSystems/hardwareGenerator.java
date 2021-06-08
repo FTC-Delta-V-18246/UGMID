@@ -64,6 +64,7 @@ public class hardwareGenerator {
         intakeServoR = opModeObj.hardwareMap.get(Servo.class, "intake_servoR");
 
         intakeServoL.setDirection(Servo.Direction.REVERSE);
+        intakeServoR.setDirection(Servo.Direction.REVERSE);
         outerRollerMI = opModeObj.hardwareMap.get(DcMotorEx.class, "outer_roller");
         outerRollerMII = opModeObj.hardwareMap.get(DcMotorEx.class, "outer_roller1");
         outerRollerMI.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
