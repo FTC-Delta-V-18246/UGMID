@@ -28,7 +28,7 @@
 
  @TeleOp
  @Config
- public class tele extends LinearOpMode {
+ public class teleB extends LinearOpMode {
 
      public enum RobotState {
          INDEXING,
@@ -163,7 +163,7 @@
 
             //driver.setWeightedDrivePower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x));
              if(!turning) {
-                 driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading()));
+                 driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
              }else{
                  //driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, Math.toDegrees(hardReader.curPose.getHeading()));
              }

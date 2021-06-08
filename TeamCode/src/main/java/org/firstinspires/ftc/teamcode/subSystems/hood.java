@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.UGBuildSeason.tele;
+import org.firstinspires.ftc.teamcode.UGBuildSeason.teleB;
 import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
@@ -161,7 +161,7 @@ public class hood {
             if (retractTime.milliseconds() > rinterval) {
                 if(shots == 3){
                     done = true;
-                    tele.shooterState = tele.RobotState.INDEXING;
+                    teleB.shooterState = teleB.RobotState.INDEXING;
                     timedCancel();
                 }
                 pusher.setPosition(leftPusherPos);

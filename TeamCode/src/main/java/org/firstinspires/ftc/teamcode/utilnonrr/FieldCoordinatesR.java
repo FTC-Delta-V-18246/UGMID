@@ -1,16 +1,31 @@
 package org.firstinspires.ftc.teamcode.utilnonrr;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.firstinspires.ftc.teamcode.geometry.Point;
 
 public class FieldCoordinatesR {
-    public Point HM, HL, HR, PL, PM, PR;
+    public Point HL, HR;
+    public static Point HM = new Point(72,-36);
+    public static Point PL = new Point(72, -26);
+    public static Point PM = new Point(72, -19);
+    public static Point PR = new Point(72, -11);
+    public static Pose2d WAI = new Pose2d(-12, -61);
+    public static Pose2d WAII = new Pose2d(-12, -60, 0);
+    public static Pose2d WBI = new Pose2d(18, -39);
+    public static Pose2d WBII = new Pose2d(15, -38, 0);
+    public static Pose2d WCI = new Pose2d(38, -63);
+    public static Pose2d WCII = new Pose2d(-12, -60, 0);
+    public static Pose2d WPU  =  new Pose2d(-30, -24, Math.PI);
+    public static Pose2d PAL = new Pose2d(9,-12);
+    public static Pose2d PAM = new Pose2d(9,-36);
+    public static Pose2d PAR = new Pose2d(9,-60);
+    public static Pose2d PRLB = new Pose2d(-16, -12,0);
+    public static Pose2d PRLC = new Pose2d(-16, -36,0);
+    public static Pose2d PS = new Pose2d(-18,-18,0);
     public FieldCoordinatesR()
     {
-        HM = new Point(72,36);
-        HR = new Point(72,40);
-        HL = new Point(72,32);
-        PR = new Point(72, 17);
-        PM = new Point(72, 10);
-        PL = new Point(72, 3);
+        HR = new Point(72,-42);
+        HL = new Point(72,-26);
     }
 }
