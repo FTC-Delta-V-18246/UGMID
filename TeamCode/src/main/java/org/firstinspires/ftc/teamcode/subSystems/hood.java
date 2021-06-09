@@ -60,7 +60,7 @@ public class hood {
             double distance = Math.sqrt(Math.pow(target.x-robot.getX(),2)+ Math.pow(target.y-robot.getY(),2));
             opModeObj.telemetry.addData("Distance",distance);
             if(!power){
-                return 5.5357014*Math.pow(10,-5)*Math.pow(distance,2)-.0106856205*distance+.7415347531;//shooterHeight;//
+                return 5.5357014*Math.pow(10,-5)*Math.pow(distance,2)-.0106856205*distance+.7315347531;//shooterHeight;//
             }else{
                 return shooterHeight;
             }
