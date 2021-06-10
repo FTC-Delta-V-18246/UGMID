@@ -52,7 +52,7 @@ public class vision {
 
         UGContourRingPipeline.Config.setHORIZON(HORIZON);
 
-        camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT));
+        camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN));
     }
     public int height(){
         switch (pipeline.getHeight()){
