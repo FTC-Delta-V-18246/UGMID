@@ -91,8 +91,8 @@ class UGContourRingPipeline(
         /** values used for inRange calculation
          * set to var in-case user wants to use their own tuned values
          * stored in YCrCb format **/
-        var lowerOrange = Scalar(0.0, 154.0, 0.0) //0, 141, 0
-        var upperOrange = Scalar(255.0, 197.0, 95.0)  //255,230,95
+       var lowerOrange = Scalar(0.0, 40.3, 0.0) //0, 141, 0
+       var upperOrange = Scalar(232.0,250.7, 100.9)  //255,230,95
 
         /** width of the camera in use, defaulted to 320 as that is most common in examples **/
         var CAMERA_WIDTH = 320

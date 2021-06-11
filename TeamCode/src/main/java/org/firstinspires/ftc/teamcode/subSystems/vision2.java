@@ -12,7 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Config
-public class vision {
+public class vision2 {
     public static final int CAMERA_WIDTH = 1920; // width  of wanted camera resolution
     public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
 
@@ -23,10 +23,10 @@ public class vision {
     private static final boolean USING_WEBCAM = true; // change to true if using webcam
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
 
-    private UGContourRingPipeline pipeline;
+    private OOTB pipeline;
     private OpenCvCamera camera;
     private LinearOpMode opMode;
-    public vision(LinearOpMode opMode){
+    public vision2(LinearOpMode opMode){
         this.opMode = opMode;
         int cameraMonitorViewId = this
                 .opMode.hardwareMap
@@ -46,7 +46,7 @@ public class vision {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new UGContourRingPipeline(opMode.telemetry, DEBUG));
+        camera.setPipeline(pipeline);
 
         UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
 
@@ -55,14 +55,6 @@ public class vision {
         camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN));
     }
     public int height(){
-        switch (pipeline.getHeight()){
-            case ONE:
-                return 1;
-            case ZERO:
-                return 0;
-            case FOUR:
-                return 4;
-        }
-        return 69;
+       return pipeline.getNumRings();
     }
 }
