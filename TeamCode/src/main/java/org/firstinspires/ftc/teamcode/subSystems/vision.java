@@ -2,28 +2,32 @@ package org.firstinspires.ftc.teamcode.subSystems;
 
 
 import com.acmerobotics.dashboard.config.Config;
+//import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
+//import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.UGBuildSeason.UGContourRingPipe;
+import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
+import static java.lang.Thread.sleep;
+
 @Config
 public class vision {
-    public static final int CAMERA_WIDTH = 1920; // width  of wanted camera resolution
-    public static final int CAMERA_HEIGHT = 1080; // height of wanted camera resolution
+    public static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
+    public static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
 
-    public static int HORIZON = 0; // horizon value to tune
+    public static int HORIZON = 00; // horizon value to tune
 
     private static final boolean DEBUG = false; // if debug is wanted, change to true
 
     private static final boolean USING_WEBCAM = true; // change to true if using webcam
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
-
-    private UGContourRingPipeline pipeline;
+    UGContourRingPipe pipeline;
     private OpenCvCamera camera;
     private LinearOpMode opMode;
     public vision(LinearOpMode opMode){
@@ -46,13 +50,23 @@ public class vision {
                     .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         }
 
-        camera.setPipeline(pipeline = new UGContourRingPipeline(opMode.telemetry, DEBUG));
+        camera.setPipeline(pipeline = new UGContourRingPipe(opMode.telemetry, DEBUG));
+        UGContourRingPipe.Config.setLowerOrange(new Scalar(0.0, 147.0, 0.0));
+        UGContourRingPipe.Config.setUpperOrange(new Scalar(255.0,189.0, 120.0));
+     //   UGContourRingPipeline.Config.setLowerOrange(new Scalar(0.0, 0, 0.0));
+      //  UGContourRingPipeline.Config.setUpperOrange(new Scalar(255.0,255.0, 255.0));
 
-        UGContourRingPipeline.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
+        UGContourRingPipe.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
+        UGContourRingPipe.Config.setHORIZON(HORIZON);
+       // camera.openCameraDevice();
+      //  camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
 
-        UGContourRingPipeline.Config.setHORIZON(HORIZON);
+        camera.openCameraDeviceAsync(() ->{
+            camera.openCameraDevice();
+            camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+        });
 
-        camera.openCameraDeviceAsync(() -> camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN));
+
     }
     public int height(){
         switch (pipeline.getHeight()){

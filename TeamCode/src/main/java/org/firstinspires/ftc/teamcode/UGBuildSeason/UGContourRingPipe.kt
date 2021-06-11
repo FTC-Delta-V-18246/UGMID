@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subSystems
+package org.firstinspires.ftc.teamcode.UGBuildSeason
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
@@ -69,7 +69,7 @@ import org.openftc.easyopencv.OpenCvPipeline
  * @param debug If true, all intermediate calculation results (except showing mat operations) will
  * be printed to telemetry (mainly for debug purposes)
  */
-class UGContourRingPipeline(
+class UGContourRingPipe(
         private val telemetry: Telemetry? = null,
         var debug: Boolean = false
 ): OpenCvPipeline() {
@@ -91,8 +91,8 @@ class UGContourRingPipeline(
         /** values used for inRange calculation
          * set to var in-case user wants to use their own tuned values
          * stored in YCrCb format **/
-       var lowerOrange = Scalar(0.0, 40.3, 0.0) //0, 141, 0
-       var upperOrange = Scalar(232.0,250.7, 100.9)  //255,230,95
+       var lowerOrange = Scalar(0.0, 0.0, 0.0) //0, 141, 0
+       var upperOrange = Scalar(255.0,255.0, 255.0)  //255,230,95
 
         /** width of the camera in use, defaulted to 320 as that is most common in examples **/
         var CAMERA_WIDTH = 320
@@ -103,7 +103,7 @@ class UGContourRingPipeline(
 
         /** algorithmically calculated minimum width for width check based on camera width **/
         val MIN_WIDTH
-            get() = (50.0 / 320.0) * CAMERA_WIDTH
+            get() = 33 //(50.0 / 320.0) * CAMERA_WIDTH
 
         /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
         const val BOUND_RATIO = 0.7
@@ -222,5 +222,6 @@ class UGContourRingPipeline(
 
         /**returns the black and orange mask with contours drawn to see logic in action**/
         return ret
+
     }
 }
