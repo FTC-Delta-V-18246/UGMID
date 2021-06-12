@@ -110,7 +110,7 @@ public class wraithtester extends LinearOpMode {
                 gen.outerRollerMII.setPower(1);
                 gen.outerRollerMI.setPower(0);
             }
-*/          //subs.angler.toPosition(pos);
+*/          subs.angler.toPosition(pos);
             shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
             if(gamepad1.b&&!shooter.done){
                 shooter.timedFireN(hardReader.shooterV);

@@ -77,6 +77,7 @@ public class hardwareGenerator {
         wobblePivot = opModeObj.hardwareMap.get(Servo.class, "wobble_pivot");
         wobblePivot.setDirection(Servo.Direction.REVERSE);
         wobbleClaw = opModeObj.hardwareMap.get(Servo.class,"wobble_claw");
+        //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 
 
         flyWheelM = opModeObj.hardwareMap.get(DcMotorEx.class, "fly_wheel");

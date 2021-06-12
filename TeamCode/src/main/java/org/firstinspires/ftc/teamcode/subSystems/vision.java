@@ -21,7 +21,7 @@ public class vision {
     public static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
     public static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
 
-    public static int HORIZON = 00; // horizon value to tune
+    public static int HORIZON = 100; // horizon value to tune
 
     private static final boolean DEBUG = false; // if debug is wanted, change to true
 

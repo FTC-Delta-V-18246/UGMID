@@ -30,7 +30,8 @@ public class hood {
         public static double interval = 150;
         public static double rinterval = 70; // minimum of 45 (realistically 55)
         public static double veloRange = 1.5; //max of 3, probably could be increased if we increased rinterval
-        public static double shooterHeight = .15;
+        public static double shooterHeight = .28; //between .28 and .3n
+        public static double shooterHeightP = .15;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -60,9 +61,9 @@ public class hood {
             double distance = Math.sqrt(Math.pow(target.x-robot.getX(),2)+ Math.pow(target.y-robot.getY(),2));
             opModeObj.telemetry.addData("Distance",distance);
             if(!power){
-                return 5.5357014*Math.pow(10,-5)*Math.pow(distance,2)-.0106856205*distance+.7315347531;//shooterHeight;//
+                return shooterHeight;//5.5357014*Math.pow(10,-5)*Math.pow(distance,2)-.0106856205*distance+.7315347531;//shooterHeight;//
             }else{
-                return shooterHeight;
+                return shooterHeightP;
             }
         }
         public void raiseToAngle(double angle){

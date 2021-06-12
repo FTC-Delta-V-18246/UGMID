@@ -21,7 +21,7 @@ public class subsystemGenerator {
     public vision camera;
     public wobble hammer;
     public LinearServo angler;
-    public static double fireSpeed = 20;
+    public static double fireSpeed = 19;
 
 
     public subsystemGenerator(LinearOpMode opMode, hardwareGenerator hard, ElapsedTime timer){
