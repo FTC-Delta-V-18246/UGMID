@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstra
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
 import java.util.Arrays;
-
+@Disabled
 @Autonomous
 @Config
 public class Bpower extends LinearOpMode {
@@ -78,31 +79,24 @@ public class Bpower extends LinearOpMode {
         Trajectory wobbleA = driver.trajectoryBuilder(power.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
-        Trajectory bounceBack0 = driver.trajectoryBuilder(wobbleA.end())
-                .lineToSplineHeading(new Pose2d(-22, 36, Math.PI))
-                .build();
 
 
         Trajectory wobbleB = driver.trajectoryBuilder(power.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
-        Trajectory bounceBack1 = driver.trajectoryBuilder(wobbleB.end())
-                .build();
 //
         Trajectory wobbleC = driver.trajectoryBuilder(power.end())
                 .lineToSplineHeading(new Pose2d(-30, 24, Math.PI))
                 .build();
-        Trajectory bounceBack4 = driver.trajectoryBuilder(wobbleB.end())
-                .build();
 
-        Trajectory parkA = driver.trajectoryBuilder(bounceBack0.end())
+        Trajectory parkA = driver.trajectoryBuilder(wobbleA.end())
                 .splineToConstantHeading(new Vector2d(-10,30),0)
                 .splineToConstantHeading(new Vector2d(10, 30),0)
                 .build();
-        Trajectory parkB = driver.trajectoryBuilder(bounceBack1.end())
+        Trajectory parkB = driver.trajectoryBuilder(wobbleB.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
-        Trajectory parkC = driver.trajectoryBuilder(bounceBack4.end())
+        Trajectory parkC = driver.trajectoryBuilder(wobbleC.end())
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
 
@@ -190,20 +184,6 @@ public class Bpower extends LinearOpMode {
                 case WD:
                     if(wobbleDrop.timeUp()){
                         hammer.release();
-                        roller.upToSpeed(); //turn on roller for bounceback
-                        switch(stack){
-                            case 0:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack0);
-                                break;
-                            case 1:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack1);
-                                break;
-                            case 4:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack4);
-                        }
                         currentState = State.dTS;
                     }
                 break;

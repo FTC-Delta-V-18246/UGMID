@@ -103,17 +103,19 @@ public class Rbasic extends LinearOpMode {
                 .lineToSplineHeading(field.WCI)
                 .build();
         Trajectory preLC = driver.trajectoryBuilder(wobbleC.end())
-                .lineToConstantHeading(field.PRLC.vec())
+                .splineToConstantHeading(new Vector2d (24,field.align),0)
+                .splineToConstantHeading(new Vector2d(-6,field.align),0)
+                .splineToConstantHeading(field.PRLC.vec(),0)
                 .build();
 
         Trajectory intakeI = driver.trajectoryBuilder(preLC.end())
-                .lineToConstantHeading(new Vector2d(-22, -36), new MinVelocityConstraint(
+                .lineToConstantHeading(new Vector2d(-17, field.align), new MinVelocityConstraint(
                         Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory intakeII = driver.trajectoryBuilder(intakeI.end())
-                .lineToConstantHeading(new Vector2d(-30, -36), new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(-26, field.align), new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(3, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -122,10 +124,10 @@ public class Rbasic extends LinearOpMode {
                 .splineToConstantHeading(field.PAL.vec(),0)
                 .build();
         Trajectory parkB = driver.trajectoryBuilder(intakeI.end())
-                .lineToConstantHeading(field.PAR.vec())
+                .lineToConstantHeading(field.PAM.vec())
                 .build();
         Trajectory parkC = driver.trajectoryBuilder(intakeII.end())
-                .lineToConstantHeading(field.PAR.vec())
+                .lineToConstantHeading(field.PAM.vec())
                 .build();
 
 
@@ -134,7 +136,7 @@ public class Rbasic extends LinearOpMode {
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
-        shooter.timedCancel();
+        shooter.doneReset();
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
         }
@@ -142,7 +144,8 @@ public class Rbasic extends LinearOpMode {
         telemetry.update();
         roller.fallOut();
         runtime.reset();
-        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);;
+        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);
+        wait intakeTimer = new wait(runtime,.8);
         State currentState = State.dTWD;
 
         switch (stack) {
@@ -162,7 +165,12 @@ public class Rbasic extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.8);
+                    if(stack==0) {
+                        wobbleDrop = new wait(runtime, 5.8);
+                    }
+                    else{
+                        wobbleDrop = new wait(runtime,.8);
+                    }
                     if(!driver.isBusy()){
                         hammer.lowLift();
                         currentState = State.WD;
@@ -171,6 +179,7 @@ public class Rbasic extends LinearOpMode {
                 case WD:
                     if(wobbleDrop.timeUp()){
                         hammer.release();
+                        hammer.lift();
                         switch(stack){
                             case 0:
                                 //drive to shoot
@@ -184,11 +193,11 @@ public class Rbasic extends LinearOpMode {
                                 //drive to shoot
                                 driver.followTrajectoryAsync(preLC);
                         }
+                        shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                         currentState = State.dTS;
                     }
                     break;
                 case dTS:
-                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if(!driver.isBusy()){
                         currentState = State.S;
                     }
@@ -196,6 +205,7 @@ public class Rbasic extends LinearOpMode {
                 case S:
                     shooter.timedFireN(hardReader.shooterV); //turn on shooter during S
                     if(shooter.done){
+                        shooter.doneReset();
                         switch(stack){
                             case 0:
                                 //park
@@ -215,23 +225,26 @@ public class Rbasic extends LinearOpMode {
                 case dTIS:
                     shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if(!driver.isBusy()){
-                        roller.upToSpeed(0);
-                        currentState = State.IS;
+                        if(!intakeTimer.timeUp()) {
+                            roller.upToSpeed(0);
+                            currentState = State.IS;
+                        }
+                    }else{
+                        intakeTimer = new wait(runtime,1);
                     }
                     break;
                 case IS:
                     shooter.timedFireN(hardReader.shooterV); //turn on shooter during IS
-                    if(shooter.shots>2){
+                    if(shooter.done){
+                        shooter.doneReset();
                         switch(stack){
                             case 1:
                                 //park
                                 driver.followTrajectoryAsync(parkB);
-                                shooter.timedCancel();
                                 currentState = State.dTPA;
                                 break;
                             case 4:
                                 //drive to intake the stack, slow speed
-                                shooter.timedCancel();
                                 driver.followTrajectoryAsync(intakeII);
                                 roller.upToSpeed();
                                 currentState = State.dTISI;

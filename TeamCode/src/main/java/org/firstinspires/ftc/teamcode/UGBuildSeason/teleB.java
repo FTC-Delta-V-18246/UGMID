@@ -95,7 +95,7 @@
 
                  case HIGH:
                      hood.goalVelo = 20;
-                     shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
+                     shooter.raiseToAngle(.02+shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                      if (!driver.isBusy() && gamepad1.right_bumper) {
                          shooter.timedFireN(hardReader.shooterV);
                      }else {

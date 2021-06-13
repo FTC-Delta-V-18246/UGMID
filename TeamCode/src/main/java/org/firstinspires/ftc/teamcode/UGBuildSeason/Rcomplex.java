@@ -76,11 +76,11 @@ public class Rcomplex extends LinearOpMode {
                 .build();
 
         Trajectory wobbleB = driver.trajectoryBuilder(preL.end())
-                .lineToSplineHeading(field.WBI)
+                .lineToSplineHeading(field.WBII)
                 .build();
 
         Trajectory wobbleC = driver.trajectoryBuilder(preL.end())
-                .lineToSplineHeading(field.WCI)
+                .lineToSplineHeading(field.WCII)
                 .build();
 
 
@@ -145,9 +145,9 @@ public class Rcomplex extends LinearOpMode {
                     }
                     break;
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.2);
+                    wobbleDrop = new wait(runtime,.4);
                     if(!driver.isBusy()){
-                        hammer.lowLift();
+                        hammer.down();
                         currentState = State.WD;
                     }
                     break;
@@ -168,6 +168,7 @@ public class Rcomplex extends LinearOpMode {
                                 driver.followTrajectoryAsync(parkC);
                                 break;
                         }
+                        hammer.lift();
                         currentState = State.dTPA;
                     }
                     break;

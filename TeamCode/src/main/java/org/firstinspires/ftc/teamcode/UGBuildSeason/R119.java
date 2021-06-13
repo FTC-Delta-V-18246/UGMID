@@ -92,7 +92,7 @@ public class R119 extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(-9, -36))
                 .build();
         Trajectory powerLB = driver.trajectoryBuilder(wobbleBA.end())
-                .lineToConstantHeading(new Vector2d(-9, -36))
+                .lineToConstantHeading(new Vector2d(-9, -33))
                 .build();
         Trajectory powerLC = driver.trajectoryBuilder(wobbleCA.end())
                 .lineToConstantHeading(new Vector2d(-9, -36))
@@ -122,31 +122,31 @@ public class R119 extends LinearOpMode {
                 .build();
 
         Trajectory wobbleAB = driver.trajectoryBuilder(powerLC.end())
-                .lineToSplineHeading(new Pose2d(-30, -24, Math.PI))
+                .lineToSplineHeading(new Pose2d(-32, -26, Math.PI))
                 .build();
         Trajectory wobbleBB = driver.trajectoryBuilder(intakeT.end())
-                .lineToSplineHeading(new Pose2d(-30, -24, Math.PI))
+                .lineToSplineHeading(new Pose2d(-32, -26, Math.PI))
                 .build();
         Trajectory wobbleCB = driver.trajectoryBuilder(intakeO.end())
-                .lineToSplineHeading(new Pose2d(-30, -24, Math.PI))
+                .lineToSplineHeading(new Pose2d(-30, -26, Math.PI))
                 .build();
 
         Trajectory wobbleAC = driver.trajectoryBuilder(wobbleAB.end())
                 .lineToSplineHeading(new Pose2d(-12, -60, 0))
                 .build();
         Trajectory wobbleBC = driver.trajectoryBuilder(wobbleBB.end())
-                .lineToSplineHeading(new Pose2d(15, -38, 0))
+                .lineToSplineHeading(new Pose2d(15, -32, 0))
                 .build();
         Trajectory wobbleCC = driver.trajectoryBuilder(wobbleCB.end())
                 .lineToSplineHeading(new Pose2d(35, -62, 0))
                 .build();
 
         Trajectory parkA = driver.trajectoryBuilder(wobbleAC.end())
-                .splineToConstantHeading(new Vector2d(-10,-30),0)
+                .splineToConstantHeading(new Vector2d(-20,-30),0)
                 .splineToConstantHeading(new Vector2d(10, -30),0)
                 .build();
         Trajectory parkB = driver.trajectoryBuilder(wobbleBC.end())
-                .lineToConstantHeading(new Vector2d(10, -30))
+                .lineToConstantHeading(new Vector2d(3, -30))
                 .build();
         Trajectory parkC = driver.trajectoryBuilder(wobbleCC.end())
                 .lineToConstantHeading(new Vector2d(10, -30))
@@ -222,7 +222,7 @@ public class R119 extends LinearOpMode {
                     break;
                 case power:
                     hammer.lift();
-                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose, true));
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
                     if (!driver.isBusy()) {
                         if(!intakeReady&&shooter.atSpeed(hardReader.shooterV)&&!timerDone) {
                             timer = new wait(runtime, 1.6);
@@ -238,7 +238,7 @@ public class R119 extends LinearOpMode {
                                     switch (stack) {
                                         case 0:
                                             driver.followTrajectoryAsync(wobbleAB);
-                                            hammer.down();
+                                            //hammer.down();
                                             currentState = State.wobbleG;
                                             break;
                                         case 1:
@@ -274,7 +274,7 @@ public class R119 extends LinearOpMode {
                                         roller.upToSpeed(0);
                                         driver.followTrajectoryAsync(wobbleBB);
                                         subs.angler.toPosition(feeder);
-                                        hammer.down();
+                                        //hammer.down();
                                         currentState = State.wobbleG;
                                         break;
                                     case 4:
@@ -286,7 +286,7 @@ public class R119 extends LinearOpMode {
                                         } else {roller.upToSpeed(0);
                                             driver.followTrajectoryAsync(wobbleCB);
                                             subs.angler.toPosition(feeder);
-                                            hammer.down();
+                                            //hammer.down();
                                             currentState = State.wobbleG;
                                         }
                                         break;
@@ -307,7 +307,10 @@ public class R119 extends LinearOpMode {
                     break;
                 case wobbleG:
                     if (!driver.isBusy()) {
-                        hammer.grab();
+                        hammer.down();
+                        if(timer2.timeUp()) {
+                            hammer.grab();
+                        }
                         if (timer.timeUp()) {
                             hammer.lift();
                             switch (stack) {
@@ -324,13 +327,14 @@ public class R119 extends LinearOpMode {
                             currentState = State.wobbleH;
                         }
                     } else {
-                        timer = new wait(runtime, 1);
+                        timer = new wait(runtime, 2);
+                        timer2 = new wait(runtime, 1);
                     }
 
                     break;
                 case wobbleH:
                     if (!driver.isBusy()) {
-                        hammer.lowLift();
+                        hammer.down();
                         if (timer.timeUp()) {
                             hammer.release();
                             switch (stack) {

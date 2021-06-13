@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
 import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesR;
-
+@Disabled
 @Autonomous
 @Config
 public class Rpower extends LinearOpMode {
@@ -98,14 +99,14 @@ public class Rpower extends LinearOpMode {
         Trajectory bounceBack4 = driver.trajectoryBuilder(wobbleB.end())
                 .build();
 
-        Trajectory parkA = driver.trajectoryBuilder(bounceBack0.end())
+        Trajectory parkA = driver.trajectoryBuilder(wobbleA.end())
                 .splineToConstantHeading(new Vector2d(-10,-30),0)
                 .splineToConstantHeading(new Vector2d(10, -30),0)
                 .build();
-        Trajectory parkB = driver.trajectoryBuilder(bounceBack1.end())
+        Trajectory parkB = driver.trajectoryBuilder(wobbleB.end())
                 .lineToConstantHeading(new Vector2d(10, -30))
                 .build();
-        Trajectory parkC = driver.trajectoryBuilder(bounceBack4.end())
+        Trajectory parkC = driver.trajectoryBuilder(wobbleC.end())
                 .lineToConstantHeading(new Vector2d(10, -30))
                 .build();
 
@@ -193,20 +194,6 @@ public class Rpower extends LinearOpMode {
                 case WD:
                     if(wobbleDrop.timeUp()){
                         hammer.release();
-                        roller.upToSpeed(); //turn on roller for bounceback
-                        switch(stack){
-                            case 0:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack0);
-                                break;
-                            case 1:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack1);
-                                break;
-                            case 4:
-                                //bounceback then drive to shoot
-                                driver.followTrajectoryAsync(bounceBack4);
-                        }
                         currentState = State.dTS;
                     }
                 break;

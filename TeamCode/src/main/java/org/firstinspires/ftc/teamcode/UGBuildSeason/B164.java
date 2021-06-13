@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.dashboard.config.Config;
@@ -37,7 +38,7 @@ import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
 import java.util.Arrays;
-
+@Disabled
 @Autonomous
 @Config
 public class B164 extends LinearOpMode {

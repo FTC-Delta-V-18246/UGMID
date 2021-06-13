@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
 //import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 
-
+@Disabled
 @TeleOp
 @Config
 public class thermometer extends LinearOpMode {

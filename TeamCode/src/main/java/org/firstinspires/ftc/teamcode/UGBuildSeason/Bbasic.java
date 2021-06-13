@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.dashboard.config.Config;
@@ -20,6 +21,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.apache.commons.math3.stat.descriptive.moment.VectorialCovariance;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.*;
 import org.firstinspires.ftc.teamcode.util.wait;
@@ -37,6 +39,7 @@ import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
 import java.util.Arrays;
+import java.util.Vector;
 
 @Autonomous
 @Config
@@ -52,6 +55,8 @@ public class Bbasic extends LinearOpMode {
     private enum State {
         dTWD,
         WD,
+        dTTTS,
+        dTTS,
         dTS,
         S,
         dTIS,
@@ -109,18 +114,24 @@ public class Bbasic extends LinearOpMode {
         Trajectory wobbleC = driver.trajectoryBuilder(startPose)
                 .lineToSplineHeading(field.WCI)
                 .build();
-        Trajectory preLC = driver.trajectoryBuilder(wobbleC.end())
+        Trajectory ppreLC = driver.trajectoryBuilder(wobbleC.end())
+                .lineToConstantHeading(new Vector2d(field.WCII.getX()-10,field.align))
+                .build();
+        Trajectory preLC = driver.trajectoryBuilder(ppreLC.end())
+                .lineToConstantHeading(new Vector2d(-6,field.align))
+                .build();
+        Trajectory LC = driver.trajectoryBuilder(preLC.end())
                 .lineToConstantHeading(field.PRLC.vec())
                 .build();
-
-        Trajectory intakeI = driver.trajectoryBuilder(preLC.end())
-                .lineToConstantHeading(new Vector2d(-22, 36), new MinVelocityConstraint(
+//intake at 10.5 inches from the stack - measured from the gotube of the transfer to the center of the seam the four stack is on.
+        Trajectory intakeI = driver.trajectoryBuilder(LC.end())
+                .lineToConstantHeading(new Vector2d(-7.1, field.align), new MinVelocityConstraint(
                         Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory intakeII = driver.trajectoryBuilder(intakeI.end())
-                .lineToConstantHeading(new Vector2d(-30, 36), new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
+                .lineToConstantHeading(new Vector2d(-20, field.align), new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(3, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
@@ -129,27 +140,32 @@ public class Bbasic extends LinearOpMode {
                 .splineToConstantHeading(field.PAL.vec(),0)
                 .build();
         Trajectory parkB = driver.trajectoryBuilder(intakeI.end())
-                .lineToConstantHeading(field.PAR.vec())
+                .lineToConstantHeading(field.PAM.vec())
                 .build();
         Trajectory parkC = driver.trajectoryBuilder(intakeII.end())
-                .lineToConstantHeading(field.PAR.vec())
+                .lineToConstantHeading(field.PAM.vec())
                 .build();
 
 
         hammer.grab();
         hammer.lift();
+        telemetry.addData("Init","Initialized");
+        telemetry.update();
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
-        shooter.timedCancel();
+        shooter.doneReset();
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
+            telemetry.addData("Stack height", stack);
+            telemetry.update();
         }
         telemetry.addData("Stack height", stack);
         telemetry.update();
         roller.fallOut();
         runtime.reset();
-        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);;
+        wait wobbleDrop = new wait(runtime,.2), wobbleGrab= new wait(runtime,.2);
+        wait intakeTimer = new wait(runtime,.8);
         State currentState = State.dTWD;
 
         switch (stack) {
@@ -169,7 +185,12 @@ public class Bbasic extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.8);
+                    if(stack==0) {
+                        wobbleDrop = new wait(runtime, 5.8);
+                    }
+                    else{
+                        wobbleDrop = new wait(runtime,.8);
+                    }
                     if(!driver.isBusy()){
                         hammer.lowLift();
                         currentState = State.WD;
@@ -178,30 +199,48 @@ public class Bbasic extends LinearOpMode {
                 case WD:
                     if(wobbleDrop.timeUp()){
                         hammer.release();
+                        hammer.lift();
                         switch(stack){
                             case 0:
                                 //drive to shoot
                                 driver.followTrajectoryAsync(preLA);
+                                currentState = State.dTS;
                                 break;
                             case 1:
                                 //drive to shoot
                                 driver.followTrajectoryAsync(preLB);
+                                currentState = State.dTS;
                                 break;
                             case 4:
                                 //drive to shoot
-                                driver.followTrajectoryAsync(preLC);
+                                driver.followTrajectoryAsync(ppreLC);
+                                currentState = State.dTTTS;
                         }
-                        currentState = State.dTS;
+                        shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     }
                     break;
+                case dTTTS:
+                    if(!driver.isBusy()){
+                        driver.followTrajectoryAsync(preLC);
+                        currentState = State.dTTS;
+                    }
+                case dTTS:
+                    if(!driver.isBusy()){
+                        driver.followTrajectoryAsync(LC);
+                        currentState = State.dTS;
+                    }
                 case dTS:
                     if(!driver.isBusy()){
                         currentState = State.S;
+                        shooter.doneReset();
                     }
                     break;
                 case S:
+                    hammer.lift();
+                    hammer.grab();
                     shooter.timedFireN(hardReader.shooterV); //turn on shooter during S
                     if(shooter.done){
+                        shooter.doneReset();
                         switch(stack){
                             case 0:
                                 //park
@@ -213,30 +252,36 @@ public class Bbasic extends LinearOpMode {
                                 //drive to intake the stack, slow speed
                                 driver.followTrajectoryAsync(intakeI);
                                 roller.upToSpeed();
+                                intakeTimer = new wait(runtime,3);
                                 currentState = State.dTIS;
                                 break;
                         }
                     }
                     break;
                 case dTIS:
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if(!driver.isBusy()){
-                        roller.upToSpeed(0);
-                        currentState = State.IS;
+                        if(intakeTimer.timeUp()) {
+                            roller.upToSpeed(0);
+                            currentState = State.IS;
+                        }
+                    }else{
+                        intakeTimer = new wait(runtime,3);
                     }
                     break;
                 case IS:
                     shooter.timedFireN(hardReader.shooterV); //turn on shooter during IS
-                    if(shooter.shots>2){
+                    if(shooter.done){
                         switch(stack){
                             case 1:
                                 //park
                                 driver.followTrajectoryAsync(parkB);
-                                shooter.timedCancel();
+                                shooter.doneReset();
                                 currentState = State.dTPA;
                                 break;
                             case 4:
                                 //drive to intake the stack, slow speed
-                                shooter.timedCancel();
+                                shooter.doneReset();
                                 driver.followTrajectoryAsync(intakeII);
                                 roller.upToSpeed();
                                 currentState = State.dTISI;

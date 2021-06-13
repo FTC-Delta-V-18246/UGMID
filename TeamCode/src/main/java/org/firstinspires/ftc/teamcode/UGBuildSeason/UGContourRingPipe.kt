@@ -96,10 +96,12 @@ class UGContourRingPipe(
 
         /** width of the camera in use, defaulted to 320 as that is most common in examples **/
         var CAMERA_WIDTH = 320
+        var CAMERA_HEIGHT = 240
 
         /** Horizon value in use, anything above this value (less than the value) since
          * (0, 0) is the top left of the camera frame **/
         var HORIZON: Int = ((100.0 / 320.0) * CAMERA_WIDTH).toInt()
+        var HORIZONX: Int = 10
 
         /** algorithmically calculated minimum width for width check based on camera width **/
         val MIN_WIDTH
@@ -155,7 +157,7 @@ class UGContourRingPipe(
 
                 val w = rect.width
                 // checking if the rectangle is below the horizon
-                if (w > maxWidth && rect.y + rect.height > HORIZON) {
+                if (w > maxWidth && rect.y + rect.height > HORIZON && rect.x + rect.width > HORIZONX && rect.x + rect.width < CAMERA_WIDTH-HORIZONX) {
                     maxWidth = w
                     maxRect = rect
                 }
@@ -182,6 +184,17 @@ class UGContourRingPipe(
                             .0,
                             255.0)
             )
+            Imgproc.line(
+                    ret,
+                    Point(HORIZONX.toDouble(),.0),
+                    Point(HORIZONX.toDouble(),CAMERA_HEIGHT.toDouble()), Scalar(255.0,.0,255.0)
+            )
+            Imgproc.line(
+                    ret,
+                    Point(CAMERA_WIDTH-HORIZONX.toDouble(),.0),
+                    Point(CAMERA_WIDTH-HORIZONX.toDouble(),CAMERA_HEIGHT.toDouble()), Scalar(255.0,.0,255.0)
+            )
+
 
             if (debug) telemetry?.addData("Vision: maxW", maxWidth)
 

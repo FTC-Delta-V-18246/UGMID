@@ -22,7 +22,7 @@ public class vision {
     public static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
 
     public static int HORIZON = 100; // horizon value to tune
-
+    public static int HORIZONX = 30;
     private static final boolean DEBUG = false; // if debug is wanted, change to true
 
     private static final boolean USING_WEBCAM = true; // change to true if using webcam
@@ -58,6 +58,7 @@ public class vision {
 
         UGContourRingPipe.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
         UGContourRingPipe.Config.setHORIZON(HORIZON);
+        UGContourRingPipe.Config.setHORIZONX(HORIZONX);
        // camera.openCameraDevice();
       //  camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
 
