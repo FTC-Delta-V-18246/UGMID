@@ -19,8 +19,6 @@ import org.firstinspires.ftc.teamcode.subSystems.*;
 import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
-import java.util.Arrays;
-
 @Autonomous
 @Config
 public class Bcomplex extends LinearOpMode {
@@ -95,6 +93,8 @@ public class Bcomplex extends LinearOpMode {
 
         hammer.grab();
         hammer.lift();
+        telemetry.addData("Init","Initialized");
+        telemetry.update();
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
@@ -115,6 +115,7 @@ public class Bcomplex extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTS:
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if(!driver.isBusy()){
                         driver.turnAsync(field.HM);
                         currentState = State.S;
@@ -195,7 +196,6 @@ public class Bcomplex extends LinearOpMode {
 
 
     }
-
 
 }
 

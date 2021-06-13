@@ -42,6 +42,7 @@
       public intake roller;
       public static double feeder = .3;
       boolean turning = false;
+      boolean autoAngle = true;
       public static RobotState shooterState = RobotState.INDEXING;;
       private ElapsedTime runtime = new ElapsedTime();
 
@@ -95,7 +96,11 @@
 
                   case HIGH:
                       hood.goalVelo = 20;
-                      shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
+                      if(autoAngle) {
+                          shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
+                      }else{
+                          shooter.raiseToAngle(shooter.shooterHeight);
+                      }
                       if (!driver.isBusy() && gamepad1.right_bumper) {
                           shooter.timedFireN(hardReader.shooterV);
                       }else {
@@ -113,7 +118,7 @@
                   case POWER:
                       shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose,true));
                       if(gamepad1.dpad_down){
-                          driver.setPoseEstimate(new Pose2d(0,-12,0));
+                          driver.setPoseEstimate(new Pose2d(0,-24,0));
                       }else if(gamepad1.dpad_left){
                           driver.turnAsync(field.PL);
                           turning = true;
@@ -212,6 +217,7 @@
 
               if(gamepad2.b){
                   driver.setPoseEstimate(new Pose2d());
+                  autoAngle = false;
               }
               FtcDashboard dashboard = FtcDashboard.getInstance();
 

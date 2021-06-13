@@ -265,9 +265,8 @@ public class B119 extends LinearOpMode {
                     }
                     break;
                 case stack:
-
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if (!driver.isBusy()&&timer3.timeUp()) {
-                        shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose, false)-.003);
                         if (timer.timeUp()) {
                             if(!timer2.timeUp()){
                                 shooter.timedFireN(hardReader.shooterV);

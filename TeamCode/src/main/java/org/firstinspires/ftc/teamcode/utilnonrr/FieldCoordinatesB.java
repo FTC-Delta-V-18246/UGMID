@@ -18,10 +18,10 @@ public class FieldCoordinatesB {
     public static Pose2d WAII = new Pose2d(-12, 60, 0);
     public static Pose2d WBI = new Pose2d(18, 39);
     public static Pose2d WBII = new Pose2d(15, 32, 0);
-    public static Pose2d WCI = new Pose2d(45, 68);
+    public static Pose2d WCI = new Pose2d(38, 68);
     public static Pose2d WCII = new Pose2d(32, 63, 0);
     public static Pose2d WPU  =  new Pose2d(-30, 24, Math.PI);
-    public static Pose2d PAL = new Pose2d(4,12);
+    public static Pose2d PAL = new Pose2d(7,12);
     public static Pose2d PAM = new Pose2d(12,36);
     public static Pose2d PAR = new Pose2d(12,60);
     public static Pose2d PRLB = new Pose2d(-16, 12,0);

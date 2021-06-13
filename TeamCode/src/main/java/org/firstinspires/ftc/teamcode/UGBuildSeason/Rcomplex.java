@@ -1,25 +1,21 @@
 package org.firstinspires.ftc.teamcode.UGBuildSeason;
 
 import android.os.Build;
-
 import androidx.annotation.RequiresApi;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
-import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
-import org.firstinspires.ftc.teamcode.subSystems.hood;
-import org.firstinspires.ftc.teamcode.subSystems.intake;
-import org.firstinspires.ftc.teamcode.subSystems.reader;
-import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
-import org.firstinspires.ftc.teamcode.subSystems.vision;
-import org.firstinspires.ftc.teamcode.subSystems.wobble;
+import org.firstinspires.ftc.teamcode.subSystems.*;
 import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesR;
 
@@ -97,6 +93,8 @@ public class Rcomplex extends LinearOpMode {
 
         hammer.grab();
         hammer.lift();
+        telemetry.addData("Init","Initialized");
+        telemetry.update();
         waitForStart();
         int stack = 0;
         wait vision = new wait(runtime, .5);
@@ -145,7 +143,7 @@ public class Rcomplex extends LinearOpMode {
                     }
                     break;
                 case dTWD:
-                    wobbleDrop = new wait(runtime,.4);
+                    wobbleDrop = new wait(runtime,1);
                     if(!driver.isBusy()){
                         hammer.down();
                         currentState = State.WD;
@@ -198,7 +196,6 @@ public class Rcomplex extends LinearOpMode {
 
 
     }
-
 
 }
 

@@ -290,6 +290,7 @@ public class Bbasic extends LinearOpMode {
                     }
                     break;
                 case dTISI:
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
                     if(!driver.isBusy()){
                         roller.upToSpeed(0);
                         currentState = State.ISI;

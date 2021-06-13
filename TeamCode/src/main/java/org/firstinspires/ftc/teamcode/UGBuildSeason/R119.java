@@ -92,7 +92,7 @@ public class R119 extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(-9, -36))
                 .build();
         Trajectory powerLB = driver.trajectoryBuilder(wobbleBA.end())
-                .lineToConstantHeading(new Vector2d(-9, -33))
+                .lineToConstantHeading(new Vector2d(-9, -36))
                 .build();
         Trajectory powerLC = driver.trajectoryBuilder(wobbleCA.end())
                 .lineToConstantHeading(new Vector2d(-9, -36))
@@ -106,19 +106,19 @@ public class R119 extends LinearOpMode {
                 .build();
 
         Trajectory intakeS = driver.trajectoryBuilder(powerLC.end())
-                .lineToConstantHeading(new Vector2d(-16, -36))
+                .lineToConstantHeading(new Vector2d(-7, -36))
                 .build();
         Trajectory intakeT = driver.trajectoryBuilder(intakeS.end())
-                .lineToConstantHeading(new Vector2d(-22, -36), new MinVelocityConstraint(
+                .lineToConstantHeading(new Vector2d(-7.1, -36), new MinVelocityConstraint(
                         Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory intakeO = driver.trajectoryBuilder(intakeT.end())
                 .lineToConstantHeading(
-                        new Vector2d(-32, -36),
+                        new Vector2d(-20, -36),
                         new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(11, DriveConstants.TRACK_WIDTH))
-                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                                Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(11, DriveConstants.TRACK_WIDTH))
+                        ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         Trajectory wobbleAB = driver.trajectoryBuilder(powerLC.end())
@@ -128,14 +128,14 @@ public class R119 extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(-32, -26, Math.PI))
                 .build();
         Trajectory wobbleCB = driver.trajectoryBuilder(intakeO.end())
-                .lineToSplineHeading(new Pose2d(-30, -26, Math.PI))
+                .lineToSplineHeading(new Pose2d(-30, -24, Math.PI))
                 .build();
 
         Trajectory wobbleAC = driver.trajectoryBuilder(wobbleAB.end())
                 .lineToSplineHeading(new Pose2d(-12, -60, 0))
                 .build();
         Trajectory wobbleBC = driver.trajectoryBuilder(wobbleBB.end())
-                .lineToSplineHeading(new Pose2d(15, -32, 0))
+                .lineToSplineHeading(new Pose2d(15, -38, 0))
                 .build();
         Trajectory wobbleCC = driver.trajectoryBuilder(wobbleCB.end())
                 .lineToSplineHeading(new Pose2d(35, -62, 0))
@@ -163,6 +163,7 @@ public class R119 extends LinearOpMode {
         //shooter.raiseToAngle(.3);//shooter.calculateTargetShooterAngle(field.HR, hardReader.curPose, false));
         waitForStart();
         wait vision = new wait(runtime, .5);
+        wait timer3 = new wait(runtime,0);
         while (!vision.timeUp() && !isStopRequested() && opModeIsActive()) {
             stack = camera.height();
         }
@@ -250,9 +251,10 @@ public class R119 extends LinearOpMode {
                                             }
                                             else{
                                                 roller.fallOut();
-                                                roller.upToSpeed(.9);
                                                 driver.followTrajectoryAsync(intakeT);
                                                 //timer = new wait(runtime,1.2);
+                                                roller.upToSpeed();
+                                                timer3 = new wait(runtime,3);
                                                 currentState = State.stack;
                                             }
                                             break;
@@ -307,11 +309,8 @@ public class R119 extends LinearOpMode {
                     break;
                 case wobbleG:
                     if (!driver.isBusy()) {
-                        hammer.down();
-                        if(timer2.timeUp()) {
-                            hammer.grab();
-                        }
-                        if (timer.timeUp()) {
+                        hammer.grab();
+                        if(timer.timeUp()) {
                             hammer.lift();
                             switch (stack) {
                                 case 0:
@@ -327,14 +326,13 @@ public class R119 extends LinearOpMode {
                             currentState = State.wobbleH;
                         }
                     } else {
-                        timer = new wait(runtime, 2);
-                        timer2 = new wait(runtime, 1);
+                        timer = new wait(runtime, 1);
                     }
 
                     break;
                 case wobbleH:
                     if (!driver.isBusy()) {
-                        hammer.down();
+                        hammer.lowLift();
                         if (timer.timeUp()) {
                             hammer.release();
                             switch (stack) {
