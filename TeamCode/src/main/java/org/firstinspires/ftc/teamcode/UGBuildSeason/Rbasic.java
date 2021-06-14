@@ -115,7 +115,7 @@ public class Rbasic extends LinearOpMode {
                 .build();
 
         Trajectory intakeI = driver.trajectoryBuilder(LC.end())
-                .lineToConstantHeading(new Vector2d(-7.1, field.align), new MinVelocityConstraint(
+                .lineToConstantHeading(new Vector2d(-5.1, field.align), new MinVelocityConstraint(
                         Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -205,7 +205,6 @@ public class Rbasic extends LinearOpMode {
                                 currentState = State.dTTTS;
                         }
                         shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
-                        currentState = State.dTS;
                     }
                     break;
                 case dTTTS:
@@ -240,6 +239,7 @@ public class Rbasic extends LinearOpMode {
                             case 4:
                                 //drive to intake the stack, slow speed
                                 driver.followTrajectoryAsync(intakeI);
+                                intakeTimer = new wait(runtime,3);
                                 roller.upToSpeed();
                                 currentState = State.dTIS;
                                 break;
@@ -269,6 +269,7 @@ public class Rbasic extends LinearOpMode {
                                 break;
                             case 4:
                                 //drive to intake the stack, slow speed
+                                shooter.doneReset();
                                 driver.followTrajectoryAsync(intakeII);
                                 roller.upToSpeed();
                                 currentState = State.dTISI;

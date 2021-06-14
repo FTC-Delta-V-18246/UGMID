@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.geometry.Point;
 @Config
 public class FieldCoordinatesR {
     public Point HL, HR;
-    public static double align = -38;
+    public static double align = -35;
     public static Point HM = new Point(72,-36);
     public static Point PL = new Point(72, -26);
     public static Point PM = new Point(72, -19);
