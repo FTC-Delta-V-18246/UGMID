@@ -200,7 +200,7 @@ public class Rbasic extends LinearOpMode {
                                 currentState = State.dTS;
                                 break;
                             case 4:
-                                //drive to shoot
+                                //drive to intake
                                 driver.followTrajectoryAsync(ppreLC);
                                 currentState = State.dTTTS;
                         }
