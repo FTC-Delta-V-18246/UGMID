@@ -88,7 +88,7 @@
               switch (shooterState) {
                   case INDEXING:
                      // shooter.feed();
-                      subs.angler.toPosition(feeder);
+                      shooter.toPosition(feeder);
                       subs.hammer.lift();
                       gen.pusherServo.setPosition(hood.leftPusherPos);
                       shooter.timedCancel();
@@ -152,7 +152,7 @@
                       break;
                   case WOBBLE:
                       roller.tuckIn();
-                      subs.angler.toPosition(.29);
+                      shooter.toPosition(.29);
                       if(gamepad1.left_bumper){
                           subs.hammer.grab();
                       }else{

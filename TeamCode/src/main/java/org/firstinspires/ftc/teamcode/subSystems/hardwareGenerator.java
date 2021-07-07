@@ -18,16 +18,13 @@ public class hardwareGenerator {
     public DcMotorEx flyWheelM1 = null;
     public DcMotorEx outerRollerMI = null;
     public DcMotorEx outerRollerMII = null;
-    public Servo pivotServoL= null;
-    public Servo pivotServoR = null;
+    public Servo flapServo = null;
     public Servo intakeServoL = null;
     public Servo intakeServoR = null;
     public Servo pusherServo = null;
     public Servo wobblePivot = null;
     public Servo wobbleClaw = null;
-    public BNO055IMU imu = null;
-    public DigitalChannel shooterLimitSwitch = null;
-   // public Encoder leftO, rightO, strafeO;
+    public Servo liftServo = null;
     public double indexAngle = .43;
 
     private LinearOpMode opModeObj;
@@ -69,8 +66,8 @@ public class hardwareGenerator {
         outerRollerMII = opModeObj.hardwareMap.get(DcMotorEx.class, "outer_roller1");
         outerRollerMI.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         outerRollerMII.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        outerRollerMI.setDirection(DcMotorEx.Direction.FORWARD);
-        outerRollerMII.setDirection(DcMotorEx.Direction.REVERSE);
+        outerRollerMII.setDirection(DcMotorEx.Direction.FORWARD);
+        outerRollerMI.setDirection(DcMotorEx.Direction.REVERSE);
         outerRollerMII.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         outerRollerMI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -87,25 +84,13 @@ public class hardwareGenerator {
         flyWheelM1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flyWheelM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flyWheelM1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        // flyWheelM1.setDirection(DcMotorEx.Direction.);
+        flyWheelM1.setDirection(DcMotorEx.Direction.REVERSE);
+        flyWheelM.setDirection(DcMotorEx.Direction.REVERSE);
 
-        pivotServoL = opModeObj.hardwareMap.get(Servo.class,"pivot_left");
-        pivotServoR = opModeObj.hardwareMap.get(Servo.class,"pivot_right");
-        pivotServoR.setDirection(Servo.Direction.FORWARD);
 
         pusherServo = opModeObj.hardwareMap.get(Servo.class,"pusher");
-
-        shooterLimitSwitch = opModeObj.hardwareMap.get(DigitalChannel.class, "sensor_digital");
-        shooterLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
-
-        imu = opModeObj.hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
-
-
-
+        flapServo = opModeObj.hardwareMap.get(Servo.class,"flap");
+        liftServo = opModeObj.hardwareMap.get(Servo.class,"lift");
 
 
 

@@ -196,7 +196,7 @@ public class R119 extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case wobbleF:
-                    subs.angler.toPosition(.29);
+                    shooter.toPosition(.29);
                     hammer.down();
                     if (!driver.isBusy()) {
                         hammer.down();
@@ -275,7 +275,7 @@ public class R119 extends LinearOpMode {
                                     case 1:
                                         roller.upToSpeed(0);
                                         driver.followTrajectoryAsync(wobbleBB);
-                                        subs.angler.toPosition(feeder);
+                                        shooter.toPosition(feeder);
                                         //hammer.down();
                                         currentState = State.wobbleG;
                                         break;
@@ -287,7 +287,7 @@ public class R119 extends LinearOpMode {
                                             shotFired = true;
                                         } else {roller.upToSpeed(0);
                                             driver.followTrajectoryAsync(wobbleCB);
-                                            subs.angler.toPosition(feeder);
+                                            shooter.toPosition(feeder);
                                             //hammer.down();
                                             currentState = State.wobbleG;
                                         }

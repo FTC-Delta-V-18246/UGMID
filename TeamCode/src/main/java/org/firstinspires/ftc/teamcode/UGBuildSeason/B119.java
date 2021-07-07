@@ -168,7 +168,6 @@ public class B119 extends LinearOpMode {
             stack = camera.height();
         }
         boolean intakeReady = false;
-        //stack = 4;
         telemetry.addData("Stack height", stack);
         telemetry.update();
         roller.fallOut();
@@ -188,15 +187,13 @@ public class B119 extends LinearOpMode {
                 break;
         }
         hardReader.autonRead();
-        int shots = 0;
-        int shooting = 1;
         while (!isStopRequested() && opModeIsActive()) {
             hardReader.autonRead();
             Pose2d curPose = hardReader.curPose;
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case wobbleF:
-                    subs.angler.toPosition(.29);
+                    shooter.toPosition(.29);
                     hammer.down();
                     if (!driver.isBusy()) {
                         hammer.down();
@@ -275,7 +272,7 @@ public class B119 extends LinearOpMode {
                                     case 1:
                                         roller.upToSpeed(0);
                                         driver.followTrajectoryAsync(wobbleBB);
-                                        subs.angler.toPosition(feeder);
+                                        shooter.toPosition(feeder);
                                         hammer.down();
                                         currentState = State.wobbleG;
                                         break;
@@ -287,7 +284,7 @@ public class B119 extends LinearOpMode {
                                             shotFired = true;
                                         } else {roller.upToSpeed(0);
                                             driver.followTrajectoryAsync(wobbleCB);
-                                            subs.angler.toPosition(feeder);
+                                            shooter.toPosition(feeder);
                                             hammer.down();
                                             currentState = State.wobbleG;
                                         }

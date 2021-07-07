@@ -11,8 +11,8 @@ public class intake {
     private DcMotorEx rollerMotorI = null;
     private Servo outerRollerServoLeft, outerRollerServoRight;
     private LinearOpMode opModeObj;
-    public static double O = .585  , I = .1;
-    public static double leftOffset = -.12;
+    public static double O = .8  , I = .42;
+    public static double leftOffset = .02;
     public static double intakePower = .9;
     public intake(LinearOpMode opMode, hardwareGenerator gen){
         opModeObj = opMode;
@@ -35,12 +35,12 @@ public class intake {
         outerRollerServoRight.setPosition(O);
     }
     public void tuckIn(){
-        outerRollerServoLeft.setPosition(I+leftOffset-.05);
+        outerRollerServoLeft.setPosition(I+leftOffset);
         outerRollerServoRight.setPosition(I);
     }
     public void moveIt(){
-        outerRollerServoLeft.setPosition(.62+leftOffset-.05);
-        outerRollerServoRight.setPosition(.62);
+        outerRollerServoLeft.setPosition(.9+leftOffset);
+        outerRollerServoRight.setPosition(.9);
     }
 
 }

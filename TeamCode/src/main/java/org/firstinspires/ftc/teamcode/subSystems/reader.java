@@ -35,9 +35,6 @@ public class reader {
         gen = hard;
         this.driver = driver;
         opModeObj = opMode;
-        imu = hard.imu;
-
-
     }
 
     public void autonRead(){
@@ -71,7 +68,7 @@ public class reader {
     public void veloRead(){
         //outerRollerV = -gen.outerRollerM.getVelocity(AngleUnit.RADIANS)*8*.036;
         //innerRollerV = gen.innerRollerM.getVelocity(AngleUnit.RADIANS)*8*.018;
-        shooterV = gen.flyWheelM1.getVelocity()/(28.0)*1.378597428*.096* Math.PI;
+        shooterV = -gen.flyWheelM1.getVelocity()/(28.0)*1.378597428*.096* Math.PI;
     }
     public void controllerRead(){
 

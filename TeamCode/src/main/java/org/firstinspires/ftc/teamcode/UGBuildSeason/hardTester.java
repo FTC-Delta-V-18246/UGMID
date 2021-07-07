@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
 @TeleOp
 @Config
-public class wraithtester extends LinearOpMode {
+public class hardTester extends LinearOpMode {
 
     public enum RobotState {
         INDEXING,
@@ -100,40 +100,39 @@ public class wraithtester extends LinearOpMode {
             b1.readValue();
             y1.readValue();
             a1.readValue();
-
-            /*
+            if(gamepad1.a){
+                gen.pusherServo.setPosition(pos);
+            }
             if(gamepad1.b){
-                telemetry.addData("Stack",camera.height());
+                gen.wobbleClaw.setPosition(pos);
+            }
+            if(gamepad1.x){
+                gen.wobblePivot.setPosition(pos);
+            }
+            if(gamepad1.y){
+                gen.liftServo.setPosition(pos);
+            }
+            if(gamepad2.a){
+                gen.outerRollerMI.setPower(pos);
+            }
+            else if(gamepad2.b){
+                gen.outerRollerMII.setPower(pos);
+            }
+            else if(gamepad2.x){
+                gen.flyWheelM.setPower(pos);
+                gen.flyWheelM1.setPower(pos);
+            }
+            else if(gamepad2.y){
+
+            }
+            else {
+                gen.flyWheelM1.setPower(0);
+                gen.flyWheelM.setPower(0);
+                gen.outerRollerMI.setPower(0);
                 gen.outerRollerMII.setPower(0);
-                gen.outerRollerMI.setPower(0);
-            }else{
-                gen.outerRollerMII.setPower(1);
-                gen.outerRollerMI.setPower(0);
-            }
-*/          shooter.toPosition(pos);
-            shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
-            if(gamepad1.b&&!shooter.done){
-                shooter.timedFireN(hardReader.shooterV);
-                roller.upToSpeed(0);
-            }else if(gamepad1.a){
-                shooter.timedCancel();
-               // roller.upToSpeed();
-            }else
-            {
-                roller.upToSpeed(0);
-            }
-            if(!gamepad1.b){
-                shooter.done = false;
-                shooter.timedCancel();
-            }
 
-            //driver.update();
-            telemetry.update();
-            FtcDashboard dashboard = FtcDashboard.getInstance();
 
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("Actual Velocity Shooter", hardReader.shooterV);
-            dashboard.sendTelemetryPacket(packet);
+            }
         }
     }
 }

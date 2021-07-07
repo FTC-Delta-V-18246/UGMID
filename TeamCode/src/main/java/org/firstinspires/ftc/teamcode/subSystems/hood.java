@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.UGBuildSeason.teleB;
 import org.firstinspires.ftc.teamcode.geometry.Point;
@@ -16,22 +17,22 @@ import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
 @Config
 public class hood {
         LinearOpMode opModeObj;
-        public LinearServo angler;
         public static double goalVelo = 18;
         private DcMotorEx flyWheel1 = null;
         private DcMotorEx flyWheel2 = null;
         private Servo pusher;
-        private DigitalChannel limitSwitch;
-        public static double leftPusherPos = .215;
-        public static double rightPusherPos = .31; //.3
+        private Servo flap;
+        private Servo lift;
+        public static double leftPusherPos = .55, rightPusherPos = .4; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
         public static double feedAngle = .323; //
-        public static double interval = 150;
-        public static double rinterval = 70; // minimum of 45 (realistically 55)
-        public static double veloRange = 1.5; //max of 3, probably could be increased if we increased rinterval
+        public static double interval = 150, rinterval = 55; // minimum of 45 (realistically 55)
+        public static double veloRange = 2; //max of 3, probably could be increased if we increased rinterval
         public static double shooterHeight = .295; //between .28 and .3n
         public static double shooterHeightP = .15;
+        public static double lowerFlap = .3, highFlap = .5;
+        public static double lowerLift = .25, highLift = .9;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -40,9 +41,8 @@ public class hood {
         ElapsedTime retractTime = new ElapsedTime();
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
-        public hood(LinearOpMode opMode, hardwareGenerator gen, LinearServo angler, double fireSpeed, double kP, double kD, double kS, double kV){
+        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV){
             opModeObj = opMode;
-            this.angler = angler;
             this.kP = kP;
             this.kD = kD;
             this.kV = kV;
@@ -53,8 +53,9 @@ public class hood {
             goalVelo = fireSpeed;
             flyWheel1 = gen.flyWheelM;
             flyWheel2 = gen.flyWheelM1;
-            limitSwitch = gen.shooterLimitSwitch;
             pusher = gen.pusherServo;
+            flap = gen.flapServo;
+            lift = gen.liftServo;
             shooterTime.reset();
         }
         public double calculateTargetShooterAngle(Point target, Pose2d robot, boolean power){
@@ -81,7 +82,7 @@ public class hood {
             }
         }
         public void raiseToAngle(double angle){
-            angler.toPosition(angle);
+            toPosition(angle);
             }
         public void upToSpeed(double curVelo, double time){
             flyWheel.PIDConstants(kP,0,kD);
@@ -122,7 +123,7 @@ public class hood {
         return false;
     }
         public void feed(){
-            angler.toPosition(feedAngle);
+            toPosition(feedAngle);
         }
         public boolean fire(double curVelo){
 
@@ -192,22 +193,31 @@ public class hood {
             timedCancel();
             done = false;
     }
-        public void timedCancel(){
+    public void timedCancel(){
 
                 shots = 0;
                 shooterTime.reset();
             retractTime.reset();
             pusher.setPosition(leftPusherPos);
             retracted = true;
-        }
-        public void timedShot(){
+    }
+    public void timedShot(){
             pusher.setPosition(rightPusherPos);
             shots++;
             retractTime.reset();
             done = false;
             retracted = false;
 
-        }
+    }
+    public void liftUp(){
+            lift.setPosition(highLift);
+    }
+    public void liftDown(){
+            lift.setPosition(lowerLift);
+    }
+    public void toPosition(double pos){
+            flap.setPosition(Range.clip(pos,lowerFlap,highFlap));
+    }
 
     }
 

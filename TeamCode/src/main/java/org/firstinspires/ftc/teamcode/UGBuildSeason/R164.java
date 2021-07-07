@@ -168,7 +168,7 @@ public class R164 extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTPO:
-                    subs.angler.toPosition(.29);
+                    shooter.toPosition(.29);
                     if (!driver.isBusy()) {
                             driver.turnAsync(field.PL);
                             currentState = State.P;

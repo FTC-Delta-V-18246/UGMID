@@ -133,7 +133,7 @@ public class Rpower extends LinearOpMode {
             PoseStorage.currentPose = curPose;
             switch (currentState) {
                 case dTPO:
-                    subs.angler.toPosition(.29);
+                    shooter.toPosition(.29);
                     if (!driver.isBusy()) {
                             currentState = State.P;
                     }

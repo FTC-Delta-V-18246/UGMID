@@ -88,13 +88,14 @@
              switch (shooterState) {
                  case INDEXING:
                     // shooter.feed();
-                     subs.angler.toPosition(feeder);
+                     shooter.liftDown();
                      subs.hammer.lift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
                      break;
 
                  case HIGH:
+                     shooter.liftUp();
                      hood.goalVelo = 20;
                      if(autoAngle) {
                          shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
@@ -152,7 +153,7 @@
                      break;
                  case WOBBLE:
                      roller.tuckIn();
-                     subs.angler.toPosition(.29);
+                     shooter.toPosition(.29);
                      if(gamepad1.left_bumper){
                          subs.hammer.grab();
                      }else{

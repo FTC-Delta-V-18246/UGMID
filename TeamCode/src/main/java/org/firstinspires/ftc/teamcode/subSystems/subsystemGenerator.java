@@ -20,14 +20,12 @@ public class subsystemGenerator {
     public SampleMecanumDrive driver;
     public vision camera;
     public wobble hammer;
-    public LinearServo angler;
     public static double fireSpeed = 19;
 
 
     public subsystemGenerator(LinearOpMode opMode, hardwareGenerator hard, ElapsedTime timer){
         support = hard;
-        angler = new LinearServo(hard);
-        shooter = new hood(opMode, support, angler, fireSpeed,.6,0,0,0.025 );   // .4, .05, .07, .0299
+        shooter = new hood(opMode, support, fireSpeed,.5,0,0,0.03 );   // .4, .05, .07, .0299
         driver = new SampleMecanumDrive(opMode.hardwareMap);
         hardReader = new reader(opMode, hard, driver, timer);
         vroomer = new drive(opMode, hard, driver, shooter, timer);

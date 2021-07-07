@@ -67,9 +67,6 @@ public class auto extends LinearOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void runOpMode() throws InterruptedException {
 
-            double dropAAngle;
-            double pickupAAngle;
-            double dropBAngle;
             hardwareGenerator gen = new hardwareGenerator(this);
             subsystemGenerator subs = new subsystemGenerator(this, gen, runtime);
             this.shooter = subs.shooter;
