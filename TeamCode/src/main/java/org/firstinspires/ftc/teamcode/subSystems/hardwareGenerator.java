@@ -85,7 +85,7 @@ public class hardwareGenerator {
         flyWheelM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flyWheelM1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flyWheelM1.setDirection(DcMotorEx.Direction.REVERSE);
-        flyWheelM.setDirection(DcMotorEx.Direction.REVERSE);
+        //flyWheelM.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         pusherServo = opModeObj.hardwareMap.get(Servo.class,"pusher");

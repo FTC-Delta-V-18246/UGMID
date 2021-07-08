@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.UGBuildSeason.teleB;
+import org.firstinspires.ftc.teamcode.UGBuildSeason.teleR;
 import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
@@ -23,16 +24,16 @@ public class hood {
         private Servo pusher;
         private Servo flap;
         private Servo lift;
-        public static double leftPusherPos = .55, rightPusherPos = .4; //.3
+        public static double leftPusherPos = .49, rightPusherPos = .35; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
         public static double feedAngle = .323; //
-        public static double interval = 150, rinterval = 55; // minimum of 45 (realistically 55)
-        public static double veloRange = 2; //max of 3, probably could be increased if we increased rinterval
+        public static double interval = 150, rinterval = 75; // minimum of 45 (realistically 55)
+        public static double veloRange = 5; //max of 3, probably could be increased if we increased rinterval
         public static double shooterHeight = .295; //between .28 and .3n
         public static double shooterHeightP = .15;
         public static double lowerFlap = .3, highFlap = .5;
-        public static double lowerLift = .25, highLift = .9;
+        public static double lowerLift = .2, highLift = .92;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -175,15 +176,14 @@ public class hood {
             }
         }else{
             if (retractTime.milliseconds() > rinterval) {
-                if(shots == 3){
-                    done = true;
-                    teleB.shooterState = teleB.RobotState.INDEXING;
-                    timedCancel();
-                }
                 pusher.setPosition(leftPusherPos);
                 if(retractTime.milliseconds()>2*rinterval) {
                     retracted = true;
                 } //intellij
+                if(shots == 3){
+                    done = true;
+                    timedCancel();
+                }
             }
         }
         opModeObj.telemetry.addData("Shots",shots);
