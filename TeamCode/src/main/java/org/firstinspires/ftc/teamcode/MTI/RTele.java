@@ -1,4 +1,4 @@
-  package org.firstinspires.ftc.teamcode.UGBuildSeason;
+  package org.firstinspires.ftc.teamcode.MTI;
 
   import android.os.Build;
 
@@ -28,7 +28,7 @@
 
   @TeleOp
   @Config
-  public class teleR extends LinearOpMode {
+  public class RTele extends LinearOpMode {
 
       public enum RobotState {
           INDEXING,
@@ -99,7 +99,7 @@
                       if(autoAngle) {
                           shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
                       }else{
-                          shooter.raiseToAngle(shooter.shooterHeight);
+                          shooter.raiseToAngle(shooter.levelFlap);
                       }
                       if (!driver.isBusy() && gamepad1.right_bumper) {
                           shooter.timedFireN(hardReader.shooterV);

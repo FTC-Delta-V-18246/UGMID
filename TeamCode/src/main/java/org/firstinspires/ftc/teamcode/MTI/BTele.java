@@ -1,4 +1,4 @@
-  package org.firstinspires.ftc.teamcode.UGBuildSeason;
+  package org.firstinspires.ftc.teamcode.MTI;
 
  import android.os.Build;
 
@@ -28,7 +28,7 @@
 
  @TeleOp
  @Config
- public class teleB extends LinearOpMode {
+ public class BTele extends LinearOpMode {
 
      public enum RobotState {
          INDEXING,
@@ -40,7 +40,6 @@
      public reader hardReader;
      public hood shooter;
      public intake roller;
-     public static double feeder = .3;
      boolean turning = false;
      boolean autoAngle = true;
      public static RobotState shooterState = RobotState.INDEXING;;
@@ -96,11 +95,10 @@
 
                  case HIGH:
                      shooter.liftUp();
-                     hood.goalVelo = 20;
                      if(autoAngle) {
                          shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
                      }else{
-                         shooter.raiseToAngle(shooter.shooterHeight);
+                         shooter.raiseToAngle(shooter.levelFlap);
                      }
                      if (!driver.isBusy() && gamepad1.right_bumper) {
                          shooter.timedFireN(hardReader.shooterV);

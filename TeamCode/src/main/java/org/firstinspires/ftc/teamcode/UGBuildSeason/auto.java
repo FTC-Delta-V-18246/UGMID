@@ -93,9 +93,6 @@ public class auto extends LinearOpMode {
                     .build();
 
         Trajectory intakeFOUR = driver.trajectoryBuilder(toPower.end().plus(new Pose2d(0,0,driver.turnToAbsolute(Math.PI/3.0,toPower.end()))))
-                .addDisplacementMarker(()->{
-                    shooter.feed();
-                })
                 .lineToLinearHeading(new Pose2d(-24.0,36.0, Math.PI/3))
                 .build();
         Trajectory intakeFOURA = driver.trajectoryBuilder(intakeFOUR.end())
@@ -273,7 +270,6 @@ public class auto extends LinearOpMode {
                         else {
                             intake = new wait(runtime, 1.5);
                             pass = true;
-                            shooter.feed();
                         }
                         break;
                     case HIGH:

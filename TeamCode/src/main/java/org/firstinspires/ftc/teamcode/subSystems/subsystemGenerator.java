@@ -20,18 +20,21 @@ public class subsystemGenerator {
     public SampleMecanumDrive driver;
     public vision camera;
     public wobble hammer;
+    public tracker magTrak;
     public static double fireSpeed = 19;
 
 
     public subsystemGenerator(LinearOpMode opMode, hardwareGenerator hard, ElapsedTime timer){
         support = hard;
-        shooter = new hood(opMode, support, fireSpeed,.5,0,0,.02 );   // .4, .05, .07, .0299
+        magTrak = new tracker(hard, timer);
+        shooter = new hood(opMode, support, fireSpeed,.5,0,0,.02 , magTrak);   // .4, .05, .07, .0299
         driver = new SampleMecanumDrive(opMode.hardwareMap);
         hardReader = new reader(opMode, hard, driver, timer);
         vroomer = new drive(opMode, hard, driver, shooter, timer);
         roller = new intake(opMode,support);
         camera = new vision(opMode);
         hammer = new wobble(opMode,support);
+
 
 
 

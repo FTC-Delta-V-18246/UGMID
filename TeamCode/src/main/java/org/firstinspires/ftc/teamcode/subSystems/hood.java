@@ -4,13 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.vuforia.Tracker;
 
-import org.firstinspires.ftc.teamcode.UGBuildSeason.teleB;
-import org.firstinspires.ftc.teamcode.UGBuildSeason.teleR;
 import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
@@ -18,6 +16,7 @@ import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
 @Config
 public class hood {
         LinearOpMode opModeObj;
+        tracker magTrak;
         public static double goalVelo = 18;
         private DcMotorEx flyWheel1 = null;
         private DcMotorEx flyWheel2 = null;
@@ -27,13 +26,11 @@ public class hood {
         public static double leftPusherPos = .49, rightPusherPos = .35; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
-        public static double feedAngle = .323; //
         public static double interval = 150, rinterval = 75; // minimum of 45 (realistically 55)
         public static double veloRange = 5; //max of 3, probably could be increased if we increased rinterval
-        public static double shooterHeight = .295; //between .28 and .3n
-        public static double shooterHeightP = .15;
-        public static double lowerFlap = .3, highFlap = .5;
-        public static double lowerLift = .2, highLift = .92;
+        public static double flapH = .22, flapHB = .24;
+        public static double lowerFlap = .18, highFlap = .5, levelFlap = .22;
+        public static double lowerLift = .1, highLift = .8;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
@@ -42,12 +39,13 @@ public class hood {
         ElapsedTime retractTime = new ElapsedTime();
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
-        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV){
+        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV, tracker magTrak){
             opModeObj = opMode;
             this.kP = kP;
             this.kD = kD;
             this.kV = kV;
             this.kS = kS;
+            this.magTrak = magTrak;
             this.fireSpeed = fireSpeed;
             flyWheel = new PIDMath(kP, 0 , kD);
             flyWheelf = new FFFBMath(kV, 0, kS);
@@ -72,14 +70,14 @@ public class hood {
             */
             if(!power) {
                 if (distance < 85) {
-                    return shooterHeight + .02;
+                    return flapH + .02;
                 } else if (distance > 120) {
-                    return shooterHeight + .02;
+                    return flapH + .02;
                 } else {
-                    return shooterHeight;
+                    return flapH;
                 }
             }else{
-                return shooterHeightP;
+                return flapH;
             }
         }
         public void raiseToAngle(double angle){
@@ -123,9 +121,6 @@ public class hood {
             return true;
         return false;
     }
-        public void feed(){
-            toPosition(feedAngle);
-        }
         public boolean fire(double curVelo){
 
             if(atSpeedP(curVelo)) {
@@ -139,53 +134,20 @@ public class hood {
                 return false;
             }
         }
-        public void timedFire(double curVelo){
-            if(save){
-                if(atSpeed(curVelo)){
-                    save = false;
-                }
-                pusher.setPosition(leftPusherPos);
-            }else {
-                if (shots == 2 && shooterTime.milliseconds() >= 2 * interval&&retracted) {
-                    timedShot();
-                } else if (shots == 1 && shooterTime.milliseconds() >= interval&&retracted) {
-                    timedShot();
-                } else if (atSpeed(curVelo) && shots == 0) {
-                    timedShot();
-                    shooterTime.reset();
-                } else if (shots != 0) {
-                    if (retractTime.milliseconds() > rinterval) {
-                        pusher.setPosition(leftPusherPos);
-                        retracted = true;
-                    }
-                }
-                if (shots == 3) {
-                    timedCancel();
-                }
-            }
-            opModeObj.telemetry.addData("Shots",shots);
-            opModeObj.telemetry.addData("Shooter time",shooterTime.milliseconds());
-            opModeObj.telemetry.addData("Retract time",retractTime.milliseconds());
-        }
     public void timedFireN(double curVelo){
-        if(retracted){
-            if (shots == 4) {
-                timedCancel();
-            } else if(atSpeed(curVelo)){
+       if(shots == 4){
+           done = true;
+           timedCancel();
+       }else if(retracted){
+            if(atSpeed(curVelo)){
                 timedShot();
             }
-        }else{
-            if (retractTime.milliseconds() > rinterval) {
+        }else if (retractTime.milliseconds() > rinterval) {
                 pusher.setPosition(leftPusherPos);
                 if(retractTime.milliseconds()>2*rinterval) {
                     retracted = true;
-                } //intellij
-                if(shots == 3){
-                    done = true;
-                    timedCancel();
                 }
             }
-        }
         opModeObj.telemetry.addData("Shots",shots);
         opModeObj.telemetry.addData("Retract time",retractTime.milliseconds());
     }
@@ -199,6 +161,7 @@ public class hood {
                 shooterTime.reset();
             retractTime.reset();
             pusher.setPosition(leftPusherPos);
+            done = true;
             retracted = true;
     }
     public void timedShot(){

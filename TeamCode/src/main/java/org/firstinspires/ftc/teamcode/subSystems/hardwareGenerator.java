@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
@@ -25,7 +26,7 @@ public class hardwareGenerator {
     public Servo wobblePivot = null;
     public Servo wobbleClaw = null;
     public Servo liftServo = null;
-    public double indexAngle = .43;
+    public DistanceSensor magSensor = null;
 
     private LinearOpMode opModeObj;
 
@@ -91,6 +92,8 @@ public class hardwareGenerator {
         pusherServo = opModeObj.hardwareMap.get(Servo.class,"pusher");
         flapServo = opModeObj.hardwareMap.get(Servo.class,"flap");
         liftServo = opModeObj.hardwareMap.get(Servo.class,"lift");
+
+        magSensor = opModeObj.hardwareMap.get(DistanceSensor.class, "mag_sensor");
 
 
 

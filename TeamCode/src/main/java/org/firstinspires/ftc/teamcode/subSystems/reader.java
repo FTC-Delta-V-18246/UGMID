@@ -6,6 +6,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -24,7 +25,7 @@ public class reader {
     Orientation angles;
     public Pose2d curPose;
     public List<LynxModule> allHubs;
-    private double loops = 0;
+    public double curX = 0;
 
     public reader(LinearOpMode opMode, hardwareGenerator hard, SampleMecanumDrive driver, ElapsedTime timer){
         opModeObj = opMode;
@@ -38,12 +39,14 @@ public class reader {
     }
 
     public void autonRead(){
+        curX = gen.magSensor.getDistance(DistanceUnit.MM);
         bulkManualClear();
         veloRead();
         odoRead();
 
     }
     public void teleRead(){
+        curX = gen.magSensor.getDistance(DistanceUnit.MM);
         bulkManualClear();
         veloRead();
         odoRead();

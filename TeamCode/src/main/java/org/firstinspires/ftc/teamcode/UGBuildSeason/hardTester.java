@@ -101,7 +101,7 @@ public class hardTester extends LinearOpMode {
             y1.readValue();
             a1.readValue();
             if(gamepad1.a){
-                gen.pusherServo.setPosition(pos);
+                gen.flapServo.setPosition(pos);
             }
             if(gamepad1.b){
                 gen.wobbleClaw.setPosition(pos);

@@ -152,7 +152,6 @@ public class B119 extends LinearOpMode {
                 .lineToConstantHeading(new Vector2d(10, 30))
                 .build();
 
-
         hammer.grab();
         hammer.lift();
        // hammer.down();
