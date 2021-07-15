@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.utilnonrr;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Disabled
 public class PIDMath {
@@ -8,22 +9,33 @@ public class PIDMath {
     double pastError;
     double totalError;
     double prevTime;
+    public ElapsedTime timer;
     public PIDMath(double kP, double kI, double kD){
      P = kP;
      I = kI;
      D = kD;
      F = 0;
+    timer = new ElapsedTime();
     }
     public PIDMath(double kP, double kI, double kD, double kF){
         P = kP;
         I = kI;
         D = kD;
         F = kF;
+    timer = new ElapsedTime();
     }
     public double calculateGain(double error, double nowTime){
         totalError += error;
         double gain = error * P + totalError * I + D * (error-pastError)/(nowTime-prevTime)+ Math.signum(error)*F;
         prevTime = nowTime;
+        pastError = error;
+        return gain;
+
+    }
+    public double calculateGain(double error){
+        totalError += error;
+        double gain = error * P + totalError * I + D * (error-pastError)/(timer.seconds()-prevTime)+ Math.signum(error)*F;
+        prevTime = timer.seconds();
         pastError = error;
         return gain;
 

@@ -13,10 +13,13 @@ import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
 
+import java.lang.annotation.Target;
+
 @Config
 public class hood {
         LinearOpMode opModeObj;
         tracker magTrak;
+        vision high;
         public static double goalVelo = 18;
         private DcMotorEx flyWheel1 = null;
         private DcMotorEx flyWheel2 = null;
@@ -26,6 +29,7 @@ public class hood {
         public static double leftPusherPos = .49, rightPusherPos = .35; //.3
         public static double kP = 0,kD = 0,fireSpeed = 0;
         public static double kV = 0, kS = 0;
+        public static double kPT, kDT;
         public static double interval = 150, rinterval = 75; // minimum of 45 (realistically 55)
         public static double veloRange = 5; //max of 3, probably could be increased if we increased rinterval
         public static double flapH = .22, flapHB = .24;
@@ -39,14 +43,17 @@ public class hood {
         ElapsedTime retractTime = new ElapsedTime();
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
-        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV, tracker magTrak){
+        private PIDMath highGoal;
+        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV, tracker magTrak, vision camera){
             opModeObj = opMode;
+            high = camera;
             this.kP = kP;
             this.kD = kD;
             this.kV = kV;
             this.kS = kS;
             this.magTrak = magTrak;
             this.fireSpeed = fireSpeed;
+            highGoal = new PIDMath(kPT, 0, kDT);
             flyWheel = new PIDMath(kP, 0 , kD);
             flyWheelf = new FFFBMath(kV, 0, kS);
             goalVelo = fireSpeed;

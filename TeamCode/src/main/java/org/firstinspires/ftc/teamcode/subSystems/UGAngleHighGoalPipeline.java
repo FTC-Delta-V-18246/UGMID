@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.subSystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-
+@Config
 public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
 
     class Fraction {
@@ -39,11 +41,14 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     private double cameraPitchOffset;
     private double cameraYawOffset;
 
-    public double fov;
+    public static double fov = 78;
+    public static double XCenter = 160;
     private double horizontalFocalLength;
     private double verticalFocalLength;
     public Telemetry telemetry;
-
+    public static double kP = 1, kD = 0, kF = 0;
+    private PIDMath turnController = new PIDMath(kP, 0, kD, kF);
+    public static double angleTolerance = 5;
     public enum Target {
         RED, BLUE
     }
@@ -51,11 +56,8 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     public UGAngleHighGoalPipeline(LinearOpMode opMode) {
         super();
         telemetry = opMode.telemetry;
-        this.fov = fov;
         this.cameraPitchOffset = cameraPitchOffset;
         this.cameraYawOffset = cameraYawOffset;
-        telemetry.addData("Angle", calculateYaw(Target.BLUE,0));
-        telemetry.update();
     }
 
     @Override
@@ -74,15 +76,11 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
         double verticalView = Math.atan(Math.tan(diagonalView / 2) * (verticalRatio / diagonalAspect)) * 2;
         horizontalFocalLength = this.imageWidth / (2 * Math.tan(horizontalView / 2));
         verticalFocalLength = this.imageHeight / (2 * Math.tan(verticalView / 2));
-        telemetry.addData("Angle", calculateYaw(Target.BLUE,0));
-        telemetry.update();
     }
 
     @Override
     public Mat processFrame(Mat input) {
         input = super.processFrame(input);
-        telemetry.addData("Angle", calculateYaw(Target.BLUE,0));
-        telemetry.update();
         return input;
     }
 
@@ -107,9 +105,8 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     public double calculateYaw(Target color, double offsetCenterX) {
         Rect currentRect = color == Target.RED ? getRedRect() : getBlueRect();
         double targetCenterX = getCenterofRect(currentRect).x;
-
         return Math.toDegrees(
-                Math.atan((targetCenterX - offsetCenterX) / horizontalFocalLength)
+                Math.atan((targetCenterX - XCenter) / horizontalFocalLength)
         );
     }
 
@@ -124,6 +121,14 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
         return -Math.toDegrees(
                 Math.atan((targetCenterY - offsetCenterY) / verticalFocalLength)
         );
+    }
+    public double angleAlign(Target color){
+        double angle = calculateYaw(color,XCenter);
+        turnController.PIDConstants(kP,0,kD,kF);
+        if(Math.abs(calculateYaw(color))>angleTolerance) {
+            return turnController.calculateGain(angle);
+        }
+        return 0;
     }
 
 }

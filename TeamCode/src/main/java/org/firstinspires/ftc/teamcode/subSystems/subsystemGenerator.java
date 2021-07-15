@@ -27,12 +27,13 @@ public class subsystemGenerator {
     public subsystemGenerator(LinearOpMode opMode, hardwareGenerator hard, ElapsedTime timer){
         support = hard;
         magTrak = new tracker(hard, timer);
-        shooter = new hood(opMode, support, fireSpeed,.5,0,0,.02 , magTrak);   // .4, .05, .07, .0299
+      //  align = new high(opMode);
+        camera = new vision(opMode);
+        shooter = new hood(opMode, support, fireSpeed,.5,0,0,.02 , magTrak, camera);   // .4, .05, .07, .0299
         driver = new SampleMecanumDrive(opMode.hardwareMap);
         hardReader = new reader(opMode, hard, driver, timer);
         vroomer = new drive(opMode, hard, driver, shooter, timer);
         roller = new intake(opMode,support);
-        camera = new vision(opMode);
         hammer = new wobble(opMode,support);
 
 

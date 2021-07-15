@@ -16,11 +16,14 @@
  import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
+ import org.firstinspires.ftc.teamcode.subSystems.UGAngleHighGoalPipeline;
  import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
  import org.firstinspires.ftc.teamcode.subSystems.hood;
  import org.firstinspires.ftc.teamcode.subSystems.intake;
  import org.firstinspires.ftc.teamcode.subSystems.reader;
  import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
+ import org.firstinspires.ftc.teamcode.subSystems.vision;
+ import org.firstinspires.ftc.teamcode.util.wait;
  import org.firstinspires.ftc.teamcode.utilnonrr.ButtonReader;
  import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
  import org.firstinspires.ftc.teamcode.utilnonrr.GamepadEx;
@@ -40,6 +43,7 @@
      public reader hardReader;
      public hood shooter;
      public intake roller;
+     public vision align;
      boolean turning = false;
      boolean autoAngle = true;
      public static RobotState shooterState = RobotState.INDEXING;;
@@ -61,10 +65,13 @@
          this.hardReader = subs.hardReader;
          this.shooter = subs.shooter;
          this.roller = subs.roller;
+         this.align = subs.camera;
          FieldCoordinatesB field = new FieldCoordinatesB();
          driver.setPoseEstimate(PoseStorage.currentPose);
          telemetry.addData("Init", "Successful");
          telemetry.update();
+
+         wait lift = new wait(runtime,1,true);
 
          waitForStart();
          runtime.reset();
@@ -91,6 +98,8 @@
                      subs.hammer.lift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
+                     lift.deinit();
+                     lift.init();
                      break;
 
                  case HIGH:
@@ -106,15 +115,15 @@
                          shooter.timedCancel();
                      }
                      if(gamepad1.left_bumper){
-                         driver.turnAsync(field.HM);
                          turning = true;
                      }else{
                          turning = false;
-                         driver.cancelFollowing();
                      }
+                     lift.deinit();
 
                      break;
                  case POWER:
+                     shooter.liftUp();
                      shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose,true));
                      if(gamepad1.dpad_down){
                          driver.setPoseEstimate(new Pose2d(0,-24,0));
@@ -147,11 +156,12 @@
                      }else {
                          gen.pusherServo.setPosition(hood.leftPusherPos);
                      }
+                     lift.deinit();
 
                      break;
                  case WOBBLE:
                      roller.tuckIn();
-                     shooter.toPosition(.29);
+                     shooter.liftDown();
                      if(gamepad1.left_bumper){
                          subs.hammer.grab();
                      }else{
@@ -168,9 +178,15 @@
             //driver.setWeightedDrivePower(new Pose2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x));
              if(!turning) {
                  driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
-             }else{
-                 //driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, Math.toDegrees(hardReader.curPose.getHeading()));
+             }else if(turning && shooterState == RobotState.HIGH){
+                 if(align.goalline.isBlueVisible()) {
+                     driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, align.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE));
+                 }else{
+                     driver.rotation.calculateGain(driver.turnToAbsolute(field.HM, hardReader.curPose), runtime.seconds());
+                 }
              }
+
+
              if (shooterState!= RobotState.HIGH&&shooterState!= RobotState.POWER) {
                  shooter.safetySwitch();
              }
@@ -180,15 +196,19 @@
 
              if(!gamepad1.left_bumper&&shooterState== RobotState.INDEXING){
                  roller.fallOut();
-                 roller.upToSpeed();
+                 if(lift.timeUp()) {
+                     roller.upToSpeed();
+                 }
              }
-             else if(gamepad1.right_bumper&&shooterState== RobotState.INDEXING){
-                 roller.upToSpeed(-.8);
-                 roller.tuckIn();
-             }
-             else{
-                 roller.upToSpeed(0);
-             }
+                 else if(gamepad1.right_bumper&&shooterState== RobotState.INDEXING){
+                     if(!lift.timeUp()) {
+                         roller.upToSpeed(-.8);
+                     }
+                     roller.tuckIn();
+                 }
+                     else{
+                         roller.upToSpeed(0);
+                     }
 
              if (y1.wasJustPressed()&&shooterState!= RobotState.WOBBLE) {
                  shooterState = RobotState.POWER;

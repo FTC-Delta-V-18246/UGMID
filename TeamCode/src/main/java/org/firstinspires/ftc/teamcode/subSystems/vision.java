@@ -28,8 +28,10 @@ public class vision {
     private static final boolean USING_WEBCAM = true; // change to true if using webcam
     private static final String WEBCAM_NAME = "Webcam 1"; // insert webcam name from configuration if using webcam
     UGContourRingPipe pipeline;
+    public UGAngleHighGoalPipeline goalline;
     private OpenCvCamera camera;
     private LinearOpMode opMode;
+    private boolean stack = true;
     public vision(LinearOpMode opMode){
         this.opMode = opMode;
         int cameraMonitorViewId = this
@@ -53,8 +55,8 @@ public class vision {
         camera.setPipeline(pipeline = new UGContourRingPipe(opMode.telemetry, DEBUG));
         UGContourRingPipe.Config.setLowerOrange(new Scalar(0.0, 147.0, 0.0));
         UGContourRingPipe.Config.setUpperOrange(new Scalar(255.0,189.0, 120.0));
-     //   UGContourRingPipeline.Config.setLowerOrange(new Scalar(0.0, 0, 0.0));
-      //  UGContourRingPipeline.Config.setUpperOrange(new Scalar(255.0,255.0, 255.0));
+        //UGContourRingPipeline.Config.setLowerOrange(new Scalar(0.0, 0, 0.0));
+        //UGContourRingPipeline.Config.setUpperOrange(new Scalar(255.0,255.0, 255.0));
 
         UGContourRingPipe.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
         UGContourRingPipe.Config.setHORIZON(HORIZON);
@@ -62,22 +64,38 @@ public class vision {
        // camera.openCameraDevice();
       //  camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
 
+
+
+        // states camera code
         camera.openCameraDeviceAsync(() ->{
             camera.openCameraDevice();
             camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
         });
 
 
+
+        /*testing code
+        camera.openCameraDevice();
+        camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+        */
+
+
     }
     public int height(){
-        switch (pipeline.getHeight()){
-            case ONE:
-                return 1;
-            case ZERO:
-                return 0;
-            case FOUR:
-                return 4;
+        if(stack) {
+            switch (pipeline.getHeight()) {
+                case ONE:
+                    return 1;
+                case ZERO:
+                    return 0;
+                case FOUR:
+                    return 4;
+            }
         }
         return 69;
+    }
+    public void highGoal(){
+        stack = false;
+        camera.setPipeline(goalline = new UGAngleHighGoalPipeline(opMode));
     }
 }
