@@ -25,13 +25,14 @@ public class reader {
     Orientation angles;
     public Pose2d curPose;
     public List<LynxModule> allHubs;
-    public double curX = 0;
+    ElapsedTime timer;
+    public double curX = 0, prevX = 0, curV = 0, prevT = 0;
 
     public reader(LinearOpMode opMode, hardwareGenerator hard, SampleMecanumDrive driver, ElapsedTime timer){
         opModeObj = opMode;
 
          allHubs = opModeObj.hardwareMap.getAll(LynxModule.class);
-
+        this.timer = timer;
         bulkManual();
         gen = hard;
         this.driver = driver;
@@ -47,6 +48,9 @@ public class reader {
     }
     public void teleRead(){
         curX = gen.magSensor.getDistance(DistanceUnit.MM);
+        curV = (curX-prevX);///(timer.seconds()-prevT);
+        prevT = timer.seconds();
+        prevX = curX;
         bulkManualClear();
         veloRead();
         odoRead();
@@ -56,7 +60,7 @@ public class reader {
     public void bulkManual(){
 
         for (LynxModule module : allHubs) {
-         //   module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
 
@@ -64,7 +68,7 @@ public class reader {
     public void bulkManualClear() {
 
         for (LynxModule module : opModeObj.hardwareMap.getAll(LynxModule.class)) {
-         //   module.clearBulkCache();
+            module.clearBulkCache();
         }
 
     }

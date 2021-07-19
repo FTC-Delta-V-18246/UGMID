@@ -20,19 +20,19 @@ public class hood {
         LinearOpMode opModeObj;
         tracker magTrak;
         vision high;
-        public static double goalVelo = 18;
+        public static double goalVelo = 21;
         private DcMotorEx flyWheel1 = null;
         private DcMotorEx flyWheel2 = null;
         private Servo pusher;
         private Servo flap;
         private Servo lift;
-        public static double leftPusherPos = .49, rightPusherPos = .35; //.3
-        public static double kP = 0,kD = 0,fireSpeed = 0;
-        public static double kV = 0, kS = 0;
+        public static double leftPusherPos = .49, rightPusherPos = .3; //.3
+        public static double kP = .6,kD = 0;
+        public static double kV = .03, kS = 0;
         public static double kPT, kDT;
-        public static double interval = 150, rinterval = 75; // minimum of 45 (realistically 55)
-        public static double veloRange = 5; //max of 3, probably could be increased if we increased rinterval
-        public static double flapH = .22, flapHB = .24;
+        public static double interval = 150, rinterval = 100; // minimum of 45 (realistically 55)
+        public static double veloRange = 3; //max of 3, probably could be increased if we increased rinterval
+        public static double flapH = .247, flapHB = .24; //24
         public static double lowerFlap = .18, highFlap = .5, levelFlap = .22;
         public static double lowerLift = .1, highLift = .8;
         public double shots = 0;
@@ -44,19 +44,13 @@ public class hood {
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
         private PIDMath highGoal;
-        public hood(LinearOpMode opMode, hardwareGenerator gen, double fireSpeed, double kP, double kD, double kS, double kV, tracker magTrak, vision camera){
+        public hood(LinearOpMode opMode, hardwareGenerator gen, tracker magTrak, vision camera){
             opModeObj = opMode;
             high = camera;
-            this.kP = kP;
-            this.kD = kD;
-            this.kV = kV;
-            this.kS = kS;
             this.magTrak = magTrak;
-            this.fireSpeed = fireSpeed;
             highGoal = new PIDMath(kPT, 0, kDT);
             flyWheel = new PIDMath(kP, 0 , kD);
             flyWheelf = new FFFBMath(kV, 0, kS);
-            goalVelo = fireSpeed;
             flyWheel1 = gen.flyWheelM;
             flyWheel2 = gen.flyWheelM1;
             pusher = gen.pusherServo;
@@ -84,7 +78,7 @@ public class hood {
                     return flapH;
                 }
             }else{
-                return flapH;
+                return .22;
             }
         }
         public void raiseToAngle(double angle){
@@ -93,7 +87,6 @@ public class hood {
         public void upToSpeed(double curVelo, double time){
             flyWheel.PIDConstants(kP,0,kD);
             flyWheelf.FFConstants(kV, 0, kS);
-            goalVelo = fireSpeed;
             double gain = flyWheel.calculateGain(goalVelo-curVelo, time)+flyWheelf.calculateFFFBGain(goalVelo);
             flyWheel1.setPower(gain);
             flyWheel2.setPower(gain);
@@ -102,7 +95,6 @@ public class hood {
         public void upToSpeed(double curVelo, double targetVelo, double time){
             flyWheel = new PIDMath(kP, 0 , kD);
             flyWheelf = new FFFBMath(kV, 0, kS);
-            goalVelo = fireSpeed;
             double gain = flyWheel.calculateGain(targetVelo-curVelo, time)+flyWheelf.calculateFFFBGain(targetVelo);
             flyWheel1.setPower(gain);
             flyWheel2.setPower(gain);
@@ -119,7 +111,7 @@ public class hood {
             flyWheel2.setPower(0);
         }
         public boolean atSpeed(double curVelo){
-            if((curVelo-goalVelo)<.4&&(goalVelo-curVelo)<veloRange)
+            if((curVelo-goalVelo)<.4&&(-curVelo+goalVelo)<veloRange)
                 return true;
             return false;
         }

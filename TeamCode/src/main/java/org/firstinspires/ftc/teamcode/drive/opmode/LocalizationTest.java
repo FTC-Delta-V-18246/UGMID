@@ -49,6 +49,9 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("FR RPM", gen.frontRightM.getVelocity()/537.6*60);
             telemetry.addData("BL RPM", gen.backLeftM.getVelocity()/537.6*60);
             telemetry.addData("BR RPM", gen.backRightM.getVelocity()/537.6*60);
+            telemetry.addData("R", gen.outerRollerMII.getCurrentPosition()); //R
+            telemetry.addData("S", gen.flyWheelM.getCurrentPosition()); //S
+            telemetry.addData("L", gen.outerRollerMI.getCurrentPosition()); //L
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());

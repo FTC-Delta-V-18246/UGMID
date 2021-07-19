@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subSystems;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -14,13 +16,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Config
 public class UGBasicHighGoalPipeline extends OpenCvPipeline {
 
     protected double centerX;
     protected double centerY;
 
-    public int minThreshold, maxThreshold;
+    public static int minThreshold = 150, maxThreshold = 200;  //150-175 on min depending on how frquently goal disappears
+    public static double minArea = 0;
     private Mat blueThreshold;
     private Mat redThreshold;
 
@@ -50,9 +53,6 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
 
         blueRect = new Rect();
         redRect = new Rect();
-
-        minThreshold = 155;
-        maxThreshold = 200;
     }
 
     @Override
@@ -107,7 +107,12 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
                 return Double.compare(Imgproc.boundingRect(t0).width, Imgproc.boundingRect(t1).width);
             });
             blueRect = Imgproc.boundingRect(biggestBlueContour);
-            Imgproc.rectangle(input, blueRect, new Scalar(0, 0, 255), 3);
+            if(blueRect.area()<minArea){
+                Imgproc.rectangle(input, blueRect, new Scalar(255, 255, 255), 2);
+                blueRect = null;
+            }else {
+                Imgproc.rectangle(input, blueRect, new Scalar(0, 0, 255), 3);
+            }
         } else {
             blueRect = null;
         }
@@ -119,6 +124,12 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
             });
             redRect = Imgproc.boundingRect(biggestRedContour);
             Imgproc.rectangle(input, redRect, new Scalar(255, 0, 0), 3);
+            if(redRect.area()<minArea){
+                Imgproc.rectangle(input, redRect, new Scalar(255, 255, 255), 2);
+                redRect = null;
+            }else {
+                Imgproc.rectangle(input, redRect, new Scalar(0, 0, 255), 3);
+            }
         } else {
             redRect = null;
         }

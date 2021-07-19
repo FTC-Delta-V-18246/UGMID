@@ -66,17 +66,20 @@
          this.shooter = subs.shooter;
          this.roller = subs.roller;
          this.align = subs.camera;
+         align.highGoal();
          FieldCoordinatesB field = new FieldCoordinatesB();
          driver.setPoseEstimate(PoseStorage.currentPose);
          telemetry.addData("Init", "Successful");
          telemetry.update();
 
-         wait lift = new wait(runtime,1,true);
+         double cycles = 0;
 
+         wait lift = new wait(runtime,1,true);
+        lift.init();
          waitForStart();
          runtime.reset();
          roller.fallOut();
-         subs.hammer.grab();
+         subs.hammer.release();
          subs.hammer.lift();
          GamepadEx gamepadEx = new GamepadEx(gamepad1);
          ButtonReader x1 = new ButtonReader(gamepadEx, GamepadKeys.Button.X);
@@ -95,31 +98,40 @@
                  case INDEXING:
                     // shooter.feed();
                      shooter.liftDown();
+                     lift.init();
                      subs.hammer.lift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
-                     lift.deinit();
-                     lift.init();
+                     if(subs.magTrak.counter(hardReader.curX, hardReader.curV)>2){
+                         shooterState = RobotState.HIGH;
+                     }
                      break;
 
                  case HIGH:
+                     subs.hammer.partialLift();
                      shooter.liftUp();
-                     if(autoAngle) {
-                         shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
-                     }else{
-                         shooter.raiseToAngle(shooter.levelFlap);
+                     if(lift.timeUp()) {
+                         if (autoAngle) {
+                             //shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
+                             shooter.raiseToAngle(shooter.flapH);
+                         } else {
+                             shooter.raiseToAngle(shooter.flapH);
+                         }
+                         if (!driver.isBusy() && gamepad1.right_bumper) {
+                             shooter.timedFireN(hardReader.shooterV);
+                         } else {
+                             shooter.timedCancel();
+                         }
+                         if (gamepad1.left_bumper) {
+                             turning = true;
+                         } else {
+                             turning = false;
+                         }
+                         lift.deinit();
                      }
-                     if (!driver.isBusy() && gamepad1.right_bumper) {
-                         shooter.timedFireN(hardReader.shooterV);
-                     }else {
-                         shooter.timedCancel();
+                     if(gamepad1.x){
+                         lift.init();
                      }
-                     if(gamepad1.left_bumper){
-                         turning = true;
-                     }else{
-                         turning = false;
-                     }
-                     lift.deinit();
 
                      break;
                  case POWER:
@@ -157,6 +169,9 @@
                          gen.pusherServo.setPosition(hood.leftPusherPos);
                      }
                      lift.deinit();
+                     if(gamepad1.x){
+                         lift.init();
+                     }
 
                      break;
                  case WOBBLE:
@@ -180,9 +195,10 @@
                  driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
              }else if(turning && shooterState == RobotState.HIGH){
                  if(align.goalline.isBlueVisible()) {
-                     driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, align.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE));
+                     driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, align.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),Math.toDegrees(hardReader.curPose.getHeading())+90);
                  }else{
-                     driver.rotation.calculateGain(driver.turnToAbsolute(field.HM, hardReader.curPose), runtime.seconds());
+                     driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
+                     //driver.rotation.calculateGain(driver.turnToAbsolute(field.HM, hardReader.curPose), runtime.seconds());
                  }
              }
 
@@ -198,17 +214,17 @@
                  roller.fallOut();
                  if(lift.timeUp()) {
                      roller.upToSpeed();
+                 }else{
+                     roller.upToSpeed(-.8);
                  }
              }
-                 else if(gamepad1.right_bumper&&shooterState== RobotState.INDEXING){
-                     if(!lift.timeUp()) {
-                         roller.upToSpeed(-.8);
-                     }
-                     roller.tuckIn();
-                 }
-                     else{
-                         roller.upToSpeed(0);
-                     }
+             else if(gamepad1.right_bumper&&shooterState== RobotState.INDEXING){
+                 roller.tuckIn();
+                 roller.upToSpeed(-.8);
+             }
+             else{
+                 roller.upToSpeed(0);
+                }
 
              if (y1.wasJustPressed()&&shooterState!= RobotState.WOBBLE) {
                  shooterState = RobotState.POWER;
@@ -224,15 +240,23 @@
              if(x1.wasJustPressed()){
                  shooterState = RobotState.INDEXING;
              }
+             cycles++;
+             double t1 = runtime.milliseconds() / cycles;
+
+             telemetry.addData("Loop time", t1);
              telemetry.addData("shooter velo", hardReader.shooterV);
-             telemetry.addData("Intake amps", gen.outerRollerMI.getCurrent(CurrentUnit.AMPS)+gen.outerRollerMII.getCurrent(CurrentUnit.AMPS));
-             telemetry.addData("Shooter amps", gen.flyWheelM.getCurrent(CurrentUnit.AMPS)+gen.flyWheelM1.getCurrent(CurrentUnit.AMPS));
-             telemetry.addData("Drive amps", gen.frontRightM.getCurrent(CurrentUnit.AMPS)+gen.frontLeftM.getCurrent(CurrentUnit.AMPS)+gen.backLeftM.getCurrent(CurrentUnit.AMPS)+gen.backRightM.getCurrent(CurrentUnit.AMPS));
+          //   telemetry.addData("Intake amps", gen.outerRollerMI.getCurrent(CurrentUnit.AMPS)+gen.outerRollerMII.getCurrent(CurrentUnit.AMPS));
+          //   telemetry.addData("Shooter amps", gen.flyWheelM.getCurrent(CurrentUnit.AMPS)+gen.flyWheelM1.getCurrent(CurrentUnit.AMPS));
+          //   telemetry.addData("Drive amps", gen.frontRightM.getCurrent(CurrentUnit.AMPS)+gen.frontLeftM.getCurrent(CurrentUnit.AMPS)+gen.backLeftM.getCurrent(CurrentUnit.AMPS)+gen.backRightM.getCurrent(CurrentUnit.AMPS));
              telemetry.addData("x", hardReader.curPose.getX());
              telemetry.addData("y", hardReader.curPose.getY());
              telemetry.addData("heading", hardReader.curPose.getHeading());
              telemetry.addData("State ",shooterState);
+             telemetry.addData("ring velo", subs.magTrak.curVelo);
+             telemetry.addData("ring pos", subs.hardReader.curX);
              telemetry.update();
+
+
 
              if(gamepad2.b){
                  driver.setPoseEstimate(new Pose2d());

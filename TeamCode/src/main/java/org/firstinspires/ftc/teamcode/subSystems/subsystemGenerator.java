@@ -29,7 +29,7 @@ public class subsystemGenerator {
         magTrak = new tracker(hard, timer);
       //  align = new high(opMode);
         camera = new vision(opMode);
-        shooter = new hood(opMode, support, fireSpeed,.5,0,0,.02 , magTrak, camera);   // .4, .05, .07, .0299
+        shooter = new hood(opMode, support, magTrak, camera);   // .4, .05, .07, .0299
         driver = new SampleMecanumDrive(opMode.hardwareMap);
         hardReader = new reader(opMode, hard, driver, timer);
         vroomer = new drive(opMode, hard, driver, shooter, timer);

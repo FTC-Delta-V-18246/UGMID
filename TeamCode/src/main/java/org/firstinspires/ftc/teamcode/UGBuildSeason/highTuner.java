@@ -36,11 +36,10 @@ ElapsedTime runtime = new ElapsedTime();
         subsystemGenerator subs = new subsystemGenerator(this, gen, runtime);
 
         this.camera = subs.camera;
-
+        camera.highGoal();
         telemetry.addLine("Init Successful");
         telemetry.update();
         waitForStart();
-        camera.highGoal();
 
         /*wait vision = new wait(runtime,.5);
         while(!vision.timeUp()&&!isStopRequested()&&opModeIsActive()){
@@ -55,9 +54,9 @@ ElapsedTime runtime = new ElapsedTime();
             telemetry.addData("Angle RED", camera.goalline.calculateYaw(UGAngleHighGoalPipeline.Target.RED));
             telemetry.addData("RED?",camera.goalline.isRedVisible());
             telemetry.addData("BLUE?",camera.goalline.isBlueVisible());
-            if(camera.goalline.isRedVisible()) {
-                subs.driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.RED),gamepad1.right_stick_x);
-                telemetry.addData("Which way", camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.RED));
+            if(camera.goalline.isBlueVisible()) {
+                subs.driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),0);
+                telemetry.addData("Which way", camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE));
             }else{
                 subs.driver.driveFieldCentric(0, 0,0, 0);
             }

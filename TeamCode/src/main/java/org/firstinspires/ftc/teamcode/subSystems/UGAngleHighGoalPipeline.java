@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subSystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
@@ -46,9 +47,9 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     private double horizontalFocalLength;
     private double verticalFocalLength;
     public Telemetry telemetry;
-    public static double kP = 1, kD = 0, kF = 0;
+    public static double kP = .02, kD = 0, kF = 1;
     private PIDMath turnController = new PIDMath(kP, 0, kD, kF);
-    public static double angleTolerance = 5;
+    public static double angleTolerance = 2;
     public enum Target {
         RED, BLUE
     }
@@ -126,7 +127,7 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
         double angle = calculateYaw(color,XCenter);
         turnController.PIDConstants(kP,0,kD,kF);
         if(Math.abs(calculateYaw(color))>angleTolerance) {
-            return turnController.calculateGain(angle);
+            return Range.clip(turnController.calculateGain(angle),-1,1);
         }
         return 0;
     }

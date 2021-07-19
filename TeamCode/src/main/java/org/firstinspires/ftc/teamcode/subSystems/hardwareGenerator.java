@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subSystems;
 
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoControllerEx;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.ServoConfigurationType;
 
 
 public class hardwareGenerator {
@@ -94,8 +98,5 @@ public class hardwareGenerator {
         liftServo = opModeObj.hardwareMap.get(Servo.class,"lift");
 
         magSensor = opModeObj.hardwareMap.get(DistanceSensor.class, "mag_sensor");
-
-
-
     }
 }

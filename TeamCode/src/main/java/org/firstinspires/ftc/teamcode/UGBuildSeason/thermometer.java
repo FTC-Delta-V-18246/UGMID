@@ -30,7 +30,6 @@ import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
 //import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 
-@Disabled
 @TeleOp
 @Config
 public class thermometer extends LinearOpMode {

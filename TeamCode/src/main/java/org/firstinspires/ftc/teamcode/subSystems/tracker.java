@@ -14,13 +14,14 @@ CODES:
 public class tracker {
     public static double vTol = .1;
     //public static double xTol = .01;
-    public static double minDis = 25;
+    public static double minDis = 27;
     public static double ringIII = 29;
     public static double ringII = 33.7;
     public static double ringI = 36;
     public static double ring0 = 37;
     hardwareGenerator gen;
-    public double curX, prevX = 0, curVelo;
+    public double prevX = 0, curVelo = 0;
+    private double mCounter = 0;
     private double time, sum;
     ElapsedTime timer;
     public double[] rH = {ring0, ringI, ringII, ringIII, minDis};
@@ -29,12 +30,22 @@ public class tracker {
 
         this.timer = timer;
     }
-    public int counter(double curX){
-        curVelo = (curX-prevX);
-        prevX = curX;
-        if(Math.abs(curVelo)>vTol) return -2;
+    public int counter(double curX, double curVelo){
+        if(Math.abs(curVelo)>vTol) {
+            return -2;
+        }
         for(int i = 0; i<4;i++){
-            if(curX>(rH[i]+rH[i+1])/2.0) return i;
+            if(curX>(rH[i]+rH[i+1])/2.0&&i!=3){
+                mCounter = 0;
+                return i;
+            }
+            if(i==3){
+                mCounter+=1;
+                if(mCounter >= 15){
+                    return 3;
+                }
+                return -3;
+            }
         }
         return -1;
 

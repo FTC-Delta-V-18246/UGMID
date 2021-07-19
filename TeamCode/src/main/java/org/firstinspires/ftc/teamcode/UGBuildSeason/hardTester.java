@@ -46,7 +46,7 @@ public class hardTester extends LinearOpMode {
     public vision camera;
     public static double fireAngle = 30;
     public static double offset = -.1;
-    public static double pos =.3 ;
+    public static double pos =.8 ;
     public static double targetAngleCustom = Math.toRadians(30);
     //testing
     //public static double topRectHeightPercentage = 0.45, topRectWidthPercentage = 0.45, bottomRectHeightPercentage = 0.45, bottomRectWidthPercentage = 0.55;

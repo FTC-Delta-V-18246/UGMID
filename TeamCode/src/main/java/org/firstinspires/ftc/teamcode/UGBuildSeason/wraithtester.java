@@ -112,6 +112,11 @@ public class wraithtester extends LinearOpMode {
             }
 */
             //shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
+            if(gamepad1.right_bumper){
+                shooter.timedFireN(hardReader.shooterV);
+            }else{
+                shooter.timedCancel();
+            }
             /*
             if(gamepad1.b&&!shooter.done){
                 shooter.timedFireN(hardReader.shooterV);
@@ -128,13 +133,15 @@ public class wraithtester extends LinearOpMode {
                 shooter.timedCancel();
             }*/
 
+            roller.upToSpeed();
             if(gamepad1.b){
                 subs.magTrak.tunerReset();
                 shooter.liftDown();
             }
             //driver.update();
+            roller.fallOut();
             telemetry.update();
-            if(subs.magTrak.counter(hardReader.curX)>2){
+            if(subs.magTrak.counter(hardReader.curX, hardReader.curV)>2){
                 shooter.liftUp();
             }else{
                 //shooter.toPosition(.22);
@@ -142,8 +149,9 @@ public class wraithtester extends LinearOpMode {
             FtcDashboard dashboard = FtcDashboard.getInstance();
 
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("rings in canister", subs.magTrak.counter(hardReader.curX));
+            packet.put("rings in canister", subs.magTrak.counter(hardReader.curX, hardReader.curV));
             packet.put("ring pos", hardReader.curX);
+            packet.put("ring velo",hardReader.curV);
             dashboard.sendTelemetryPacket(packet);
         }
     }

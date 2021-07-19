@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class wobble {
     public Servo wobbleClaw, wobblePivot;
-    public static double wobbleGrab = .65, wobbleRelease = 1, wobbleLoad = .7, wobbleLift = .9, wobbleDown = 0.4, wobblePartialLift = .72, lowLift = .45;
+    public static double wobbleGrab = .61, wobbleRelease = 1, wobbleLoad = .7, wobbleLift = .75, wobbleDown = 0.15, wobblePartialLift = .4, lowLift = .2;
     public wobble(LinearOpMode opMode, hardwareGenerator gen){
         wobbleClaw = gen.wobbleClaw;
         wobblePivot = gen.wobblePivot;

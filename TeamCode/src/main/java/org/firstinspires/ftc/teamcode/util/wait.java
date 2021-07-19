@@ -33,7 +33,7 @@ public class wait {
         }
     }
     public boolean timeUp(){
-        if(waitClock.seconds()-startTime>=length){
+        if(waitClock.seconds()>=length){
             return true;
         }
         else{
