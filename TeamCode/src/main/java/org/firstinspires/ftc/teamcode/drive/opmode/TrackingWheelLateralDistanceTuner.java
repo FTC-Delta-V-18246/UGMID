@@ -63,7 +63,6 @@ import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
  * slightly but your heading will still be fine. This does not affect your overall tracking
  * precision. The heading should still line up.
  */
-@Disabled
 @Config
 @TeleOp(group = "drive")
 public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
@@ -109,12 +108,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             double deltaHeading = heading - lastHeading;
 
 
-            if(Angle.normDelta(deltaHeading)<0){
-                headingAccumulator+= StandardTrackingWheelLocalizer.R_MULTIPLIER*Angle.normDelta(deltaHeading);
-            }
-            else{
                 headingAccumulator += Angle.normDelta(deltaHeading);
-            }
             lastHeading = heading;
 
             telemetry.clearAll();

@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 /*
  * This is a simple routine to test translational drive capabilities.
  */
-
 @Disabled
 @Config
 @Autonomous(group = "drive")

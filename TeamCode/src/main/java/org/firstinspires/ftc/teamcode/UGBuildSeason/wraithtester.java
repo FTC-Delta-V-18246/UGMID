@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -111,9 +112,19 @@ public class wraithtester extends LinearOpMode {
                 gen.outerRollerMI.setPower(0);
             }
 */
-            //shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
+            if(gamepad1.dpad_left){
+                driver.turnAsync(field.PL);
+            }else if(gamepad1.dpad_right){
+                driver.turnAsync(field.PR);
+            }
+            else if(gamepad1.dpad_down){
+                driver.turnAsync(field.PM);
+            }else if(gamepad1.dpad_up){
+                driver.setPoseEstimate(new Pose2d(0,0,0));
+            }
+            shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
             if(gamepad1.right_bumper){
-                shooter.timedFireN(hardReader.shooterV);
+                shooter.fire(hardReader.shooterV);
             }else{
                 shooter.timedCancel();
             }
@@ -132,8 +143,8 @@ public class wraithtester extends LinearOpMode {
                 shooter.done = false;
                 shooter.timedCancel();
             }*/
-
-            roller.upToSpeed();
+/*
+           roller.upToSpeed();
             if(gamepad1.b){
                 subs.magTrak.tunerReset();
                 shooter.liftDown();
@@ -146,6 +157,12 @@ public class wraithtester extends LinearOpMode {
             }else{
                 //shooter.toPosition(.22);
             }
+
+ */
+            shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,true));
+            subs.hammer.partialLift();
+            shooter.liftUp();
+            driver.update();
             FtcDashboard dashboard = FtcDashboard.getInstance();
 
             TelemetryPacket packet = new TelemetryPacket();

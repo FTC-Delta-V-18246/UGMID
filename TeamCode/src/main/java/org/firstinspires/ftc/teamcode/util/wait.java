@@ -3,27 +3,27 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class wait {
-    ElapsedTime waitClock;
+    public ElapsedTime waitClock;
     double startTime = 999999999;
     double length;
     boolean repeat;
-    boolean init;
+    public boolean init;
     public wait(ElapsedTime waitClock, double length){
         this.waitClock = waitClock;
         this.length = length;
         startTime = this.waitClock.seconds();
         this.repeat = true;
     }
-    public wait(ElapsedTime waitClock, double length, boolean repeat){
-        this.waitClock = waitClock;
+    public wait(double length, boolean repeat){
+        waitClock = new ElapsedTime();
+        waitClock.reset();
         this.length = length;
-        this.repeat = false;
+        this.repeat = repeat;
         init = false;
     }
     public void init(){
-        if(init == false) {
+        if(init == false||repeat) {
             waitClock.reset();
-            startTime = this.waitClock.seconds();
             init = true;
         }
     }

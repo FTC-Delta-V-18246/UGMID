@@ -74,7 +74,7 @@
 
          double cycles = 0;
 
-         wait lift = new wait(runtime,1,true);
+         wait lift = new wait(1,true);
         lift.init();
          waitForStart();
          runtime.reset();
@@ -96,9 +96,7 @@
              a1.readValue();
              switch (shooterState) {
                  case INDEXING:
-                    // shooter.feed();
                      shooter.liftDown();
-                     lift.init();
                      subs.hammer.lift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
@@ -137,8 +135,9 @@
                  case POWER:
                      shooter.liftUp();
                      shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.PM, hardReader.curPose,true));
+                     subs.hammer.partialLift();
                      if(gamepad1.dpad_down){
-                         driver.setPoseEstimate(new Pose2d(0,-24,0));
+                         driver.setPoseEstimate(new Pose2d(0,0,0));
                      }else if(gamepad1.dpad_left){
                          driver.turnAsync(field.PL);
                          turning = true;
@@ -215,6 +214,7 @@
                  if(lift.timeUp()) {
                      roller.upToSpeed();
                  }else{
+                     shooter.liftDown();
                      roller.upToSpeed(-.8);
                  }
              }
@@ -226,11 +226,13 @@
                  roller.upToSpeed(0);
                 }
 
-             if (y1.wasJustPressed()&&shooterState!= RobotState.WOBBLE) {
+             if (y1.wasJustPressed()) {
                  shooterState = RobotState.POWER;
+                 lift.init();
              }
-             if (b1.wasJustPressed()&&shooterState!= RobotState.WOBBLE) {
+             if (b1.wasJustPressed()) {
                  shooterState = RobotState.HIGH;
+                 lift.init();
                  // driver.turnAsync(field.HM);
 
              }
@@ -239,6 +241,9 @@
              }
              if(x1.wasJustPressed()){
                  shooterState = RobotState.INDEXING;
+             }
+             if(shooterState !=RobotState.HIGH&&shooterState!=RobotState.POWER){
+                 turning = false;
              }
              cycles++;
              double t1 = runtime.milliseconds() / cycles;

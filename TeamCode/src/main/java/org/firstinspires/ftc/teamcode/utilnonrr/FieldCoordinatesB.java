@@ -11,21 +11,24 @@ public class FieldCoordinatesB {
     public Point HL, HR;
     public static double align = 38;
     public static Point HM = new Point(72,36);
-    public static Point PL = new Point(72, 26);
-    public static Point PM = new Point(72, 19);
-    public static Point PR = new Point(72, 11);
-    public static Pose2d WAI = new Pose2d(-12, 58);
+    public static Point PL = new Point(72, 3);
+    public static Point PM = new Point(72, 12);
+    public static Point PR = new Point(72, 20);
+    public static Pose2d WAI = new Pose2d(-10, 50,5.0*Math.PI/4.0);
+    public static Pose2d WAIB = new Pose2d(35, 56,0);
     public static Pose2d WAII = new Pose2d(-12, 60, 0);
-    public static Pose2d WBI = new Pose2d(18, 39);
-    public static Pose2d WBII = new Pose2d(15, 32, 0);
-    public static Pose2d WCI = new Pose2d(38, 68);
+    public static Pose2d WBI = new Pose2d(18, 39,Math.PI);
+    public static Pose2d WBIB = new Pose2d(35, 13,-Math.PI/2.0);
+    public static Pose2d WBII = new Pose2d(15, 32, Math.PI);
+    public static Pose2d WCI = new Pose2d(31, 63,Math.PI);
+    public static Pose2d WCIB = new Pose2d(50, 42,5.0*Math.PI/4.0);
     public static Pose2d WCII = new Pose2d(32, 63, 0);
     public static Pose2d WPU  =  new Pose2d(-30, 24, Math.PI);
-    public static Pose2d PAL = new Pose2d(7,12);
-    public static Pose2d PAM = new Pose2d(12,36);
-    public static Pose2d PAR = new Pose2d(12,60);
-    public static Pose2d PRLB = new Pose2d(-16, 12,0);
-    public static Pose2d PRLC = new Pose2d(-7, align,0);
+    public static Pose2d PAL = new Pose2d(7,12,0);
+    public static Pose2d PAM = new Pose2d(2,36,0);
+    public static Pose2d PAR = new Pose2d(2,60,Math.PI);
+    public static Pose2d PRLB = new Pose2d(-16, 14,0);
+    public static Pose2d PRLC = new Pose2d(-41, align,0);
     public static Pose2d PS = new Pose2d(-10,18,0);
 
     public FieldCoordinatesB()

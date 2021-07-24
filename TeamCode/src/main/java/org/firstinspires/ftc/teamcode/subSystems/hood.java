@@ -26,13 +26,13 @@ public class hood {
         private Servo pusher;
         private Servo flap;
         private Servo lift;
-        public static double leftPusherPos = .49, rightPusherPos = .3; //.3
+        public static double leftPusherPos = .5, rightPusherPos = .37; //.3
         public static double kP = .6,kD = 0;
         public static double kV = .03, kS = 0;
         public static double kPT, kDT;
         public static double interval = 150, rinterval = 100; // minimum of 45 (realistically 55)
         public static double veloRange = 3; //max of 3, probably could be increased if we increased rinterval
-        public static double flapH = .247, flapHB = .24; //24
+        public static double flapH = .24, flapHB = .24; //24
         public static double lowerFlap = .18, highFlap = .5, levelFlap = .22;
         public static double lowerLift = .1, highLift = .8;
         public double shots = 0;
@@ -71,9 +71,9 @@ public class hood {
             */
             if(!power) {
                 if (distance < 85) {
-                    return flapH + .02;
+                    return flapH + .00;
                 } else if (distance > 120) {
-                    return flapH + .02;
+                    return flapH -.01;
                 } else {
                     return flapH;
                 }
@@ -171,6 +171,7 @@ public class hood {
             retracted = false;
 
     }
+
     public void liftUp(){
             lift.setPosition(highLift);
     }

@@ -11,7 +11,7 @@ public class intake {
     private DcMotorEx rollerMotorI = null;
     private Servo outerRollerServoLeft, outerRollerServoRight;
     private LinearOpMode opModeObj;
-    public static double O = .96  , I = .53; //outer roller's center should be about 3.25in off the ground
+    public static double O = .9  , I = .53; //outer roller's center should be about 3.25in off the ground
     public static double leftOffset = .02;
     public static double intakePower = .9;
     public intake(LinearOpMode opMode, hardwareGenerator gen){

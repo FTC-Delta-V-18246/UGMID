@@ -47,7 +47,7 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     private double horizontalFocalLength;
     private double verticalFocalLength;
     public Telemetry telemetry;
-    public static double kP = .02, kD = 0, kF = 1;
+    public static double kP = .02, kD = 0, kF = .2;
     private PIDMath turnController = new PIDMath(kP, 0, kD, kF);
     public static double angleTolerance = 2;
     public enum Target {
