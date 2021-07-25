@@ -85,9 +85,11 @@ public class BOuter extends LinearOpMode{
 
 
         Trajectory preL = driver.trajectoryBuilder(startPose)
+                .addDisplacementMarker(() ->
+                        roller.toPosition(.71))
                 .lineToConstantHeading(field.PRLC.vec())
                 .addDisplacementMarker(() ->
-                        roller.upToSpeed(-.8))
+                        roller.upToSpeed(0))
                 .addDisplacementMarker(() ->
                         roller.fallOut())
                 .build();
@@ -119,7 +121,7 @@ public class BOuter extends LinearOpMode{
                         roller.upToSpeed(.8))
                 .addDisplacementMarker(() ->
                         roller.fallOut())
-                .lineToSplineHeading(new Pose2d(-40,field.align,0),new MinVelocityConstraint(
+                .lineToSplineHeading(new Pose2d(-38.5,field.align,0),new MinVelocityConstraint(
                 Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.2*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
         ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 /*.addDisplacementMarker(() ->
@@ -142,8 +144,8 @@ public class BOuter extends LinearOpMode{
                         takeIn.init())
                 .build();
         Trajectory last = driver.trajectoryBuilder(forward.end())
-                .lineToSplineHeading(new Pose2d(-34,field.align,0),new MinVelocityConstraint(
-                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(1*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                .lineToSplineHeading(new Pose2d(-32,field.align,0),new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.2*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory wobbleC = driver.trajectoryBuilder(last.end())
@@ -156,11 +158,11 @@ public class BOuter extends LinearOpMode{
 
 
 //intake at 10.5 inches from the stack - measured from the gotube of the transfer to the center of the seam the four stack is on.
-
+        roller.tuckIn();
         hammer.preload();
         waitForStart();
 
-        int stack = 4;
+        int stack = 0;
         /*while (!isStopRequested() && opModeIsActive()&&!Thread.currentThread().isInterrupted()) {
             stack = camera.height();
             telemetry.addData("Stack height", stack);
@@ -347,6 +349,7 @@ public class BOuter extends LinearOpMode{
                             case 0:
                                 if(wobblePause.timeUp()) {
                                     driver.followTrajectoryAsync(parkA);
+                                    currentState = State.park;
                                 }
                                 break;
                             case 1:
