@@ -21,6 +21,7 @@ public class subsystemGenerator {
     public vision camera;
     public wobble hammer;
     public tracker magTrak;
+    public stockTimer autoTimer;
     public static double fireSpeed = 19;
 
 
@@ -35,7 +36,7 @@ public class subsystemGenerator {
         vroomer = new drive(opMode, hard, driver, shooter, timer);
         roller = new intake(opMode,support);
         hammer = new wobble(opMode,support);
-
+        autoTimer = new stockTimer();
 
 
 

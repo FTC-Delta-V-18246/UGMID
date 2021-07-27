@@ -101,7 +101,7 @@
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
                      if(subs.magTrak.counter(hardReader.curX, hardReader.curV)>2){
-                         shooterState = RobotState.HIGH;
+                        // shooterState = RobotState.HIGH;
                      }
                      break;
 

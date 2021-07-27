@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UGBuildSeason
 
+import com.acmerobotics.dashboard.config.Config
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
@@ -69,6 +70,7 @@ import org.openftc.easyopencv.OpenCvPipeline
  * @param debug If true, all intermediate calculation results (except showing mat operations) will
  * be printed to telemetry (mainly for debug purposes)
  */
+@Config
 class UGContourRingPipe(
         private val telemetry: Telemetry? = null,
         var debug: Boolean = false
@@ -91,8 +93,15 @@ class UGContourRingPipe(
         /** values used for inRange calculation
          * set to var in-case user wants to use their own tuned values
          * stored in YCrCb format **/
-       var lowerOrange = Scalar(0.0, 0.0, 0.0) //0, 141, 0
-       var upperOrange = Scalar(255.0,255.0, 255.0)  //255,230,95
+
+        @JvmField var lf = 100.0
+        @JvmField var ls= 160.0
+        @JvmField var lt= 80.0
+        @JvmField var hf = 215.0
+        @JvmField var hs= 185.0
+        @JvmField var ht = 110.0
+        val lowerOrange get() = Scalar(lf, ls,lt) //100 160 80    OLD CAMERA: 0 147 0
+       val upperOrange get() = Scalar(hf,hs, ht)  //215 185 110    OLD CAMERA: 255 189 120
 
         /** width of the camera in use, defaulted to 320 as that is most common in examples **/
         var CAMERA_WIDTH = 320
@@ -104,8 +113,7 @@ class UGContourRingPipe(
         var HORIZONX: Int = 10
 
         /** algorithmically calculated minimum width for width check based on camera width **/
-        val MIN_WIDTH
-            get() = 33 //(50.0 / 320.0) * CAMERA_WIDTH
+         var MIN_WIDTH = 60 //(50.0 / 320.0) * CAMERA_WIDTH
 
         /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
         const val BOUND_RATIO = 0.7

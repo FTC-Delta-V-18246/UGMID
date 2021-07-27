@@ -42,32 +42,22 @@ import java.util.Vector;
 
 @Autonomous
 @Config
-public class BInnerNoP  extends LinearOpMode {
-    public SampleMecanumDrive driver;
-    public reader hardReader;
-    public hood shooter;
-    public intake roller;
-    public vision camera;
-    public wobble hammer;
+public class BInnerNoP extends LinearOpMode {
+    private SampleMecanumDrive driver;
+    private reader hardReader;
+    private hood shooter;
+    private intake roller;
+    private vision camera;
+    private wobble hammer;
+    private stockTimer autoTimer;
 
     private ElapsedTime runtime = new ElapsedTime();
 
     private enum State {
-        powerShot,
-        bounceBack,
-        recovery,
+        preLoad,
         park
     }
-    private enum Powershot{
-        turnL,
-        left,
-        turnM,
-        middle,
-        turnR,
-        right,
-        end
-    }
-    Trajectory bb2, bb3, wobbleA, wobbleB, wobbleC, wobbleCI, wobbleTraj,wobbleBI, recoveryBI, recoveryCI;
+    Trajectory wobbleA, wobbleB, wobbleC, wobbleCI, wobbleBI, parkA, parkB, parkC;
     int stack = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -82,10 +72,10 @@ public class BInnerNoP  extends LinearOpMode {
         this.roller = subs.roller;
         this.camera = subs.camera;
         this.hammer = subs.hammer;
+        this.autoTimer = subs.autoTimer;
 
         FieldCoordinatesB field = new FieldCoordinatesB();
-        State currentState = State.powerShot;
-        Powershot currentShot = Powershot.turnL;
+        State currentState = State.preLoad;
         Pose2d startPose = new Pose2d(-64, 25, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
@@ -93,28 +83,20 @@ public class BInnerNoP  extends LinearOpMode {
         Trajectory pShot = driver.trajectoryBuilder(startPose)
                 .lineToSplineHeading(field.PRLB)
                 .build();
-        Trajectory bb1 = driver.trajectoryBuilder(pShot.end())
-                .splineToLinearHeading(new Pose2d(50,10,Math.PI/8.0),0)
-                .addDisplacementMarker(() -> driver.followTrajectoryAsync(bb2))
-                .build();
-        bb2 = driver.trajectoryBuilder(bb1.end())
-                .splineToLinearHeading(new Pose2d(50,30,Math.PI/2.0),0)
-                .addDisplacementMarker(() -> driver.followTrajectoryAsync(bb3))
-                .build();
-        bb3 = driver.trajectoryBuilder(bb2.end())
-                .splineToLinearHeading(new Pose2d(50,40,Math.PI/2.0),0)
-                .addDisplacementMarker(() ->
-                    driver.followTrajectoryAsync(wobbleTraj))
-                .build();
-
-
-        wobbleA = driver.trajectoryBuilder(bb3.end())
+        wobbleA = driver.trajectoryBuilder(pShot.end())
                 .lineToSplineHeading(field.WAIB)
                 .addDisplacementMarker(() ->
                         hammer.down())
+                .addDisplacementMarker(() ->
+                        hammer.release())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(parkA))
+                .build();
+        parkA = driver.trajectoryBuilder(wobbleA.end())
+                .lineToSplineHeading(FieldCoordinatesB.PAL)
                 .build();
 
-        wobbleB = driver.trajectoryBuilder(bb3.end())
+        wobbleB = driver.trajectoryBuilder(pShot.end())
                 .splineToLinearHeading(new Pose2d(50,15,0),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleBI))
@@ -123,8 +105,15 @@ public class BInnerNoP  extends LinearOpMode {
                 .splineToLinearHeading(FieldCoordinatesB.WBIB,0)
                 .addDisplacementMarker(() ->
                         hammer.down())
+                .addDisplacementMarker(() ->
+                        hammer.release())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(parkB))
                 .build();
-        wobbleC = driver.trajectoryBuilder(bb3.end())
+        parkB = driver.trajectoryBuilder(wobbleBI.end())
+                .lineToSplineHeading(FieldCoordinatesB.PAL)
+                .build();
+        wobbleC = driver.trajectoryBuilder(pShot.end())
                 .splineToLinearHeading(new Pose2d(30,30,Math.PI),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleCI))
@@ -133,82 +122,42 @@ public class BInnerNoP  extends LinearOpMode {
                 .splineToLinearHeading(field.WCIB,0)
                 .addDisplacementMarker(() ->
                         hammer.down())
-                .build();
-        Trajectory recoveryA = driver.trajectoryBuilder(wobbleA.end())
-                .splineToLinearHeading(new Pose2d(35,18,0),0)
-                .splineToLinearHeading(field.PRLB,0)
                 .addDisplacementMarker(() ->
-                        driver.turnAsync(field.HM))
-                .build();
-        Trajectory recoveryB = driver.trajectoryBuilder(wobbleB.end())
-                .splineToLinearHeading(new Pose2d(26,16,-Math.PI/4.0),0)
+                        hammer.release())
                 .addDisplacementMarker(() ->
-                        driver.followTrajectoryAsync(recoveryBI))
+                    driver.followTrajectoryAsync(parkC))
                 .build();
-        recoveryBI = driver.trajectoryBuilder(recoveryB.end())
-                .splineToLinearHeading(field.PRLB,0)
-                .addDisplacementMarker(() ->
-                        driver.turnAsync(field.HM))
-                .build();
-        Trajectory recoveryC = driver.trajectoryBuilder(wobbleC.end())
-                .splineToLinearHeading(new Pose2d(35,18,0),0)
-                .addDisplacementMarker(() ->
-                        driver.followTrajectoryAsync(recoveryCI))
-                .build();
-        recoveryCI = driver.trajectoryBuilder(recoveryC.end())
-                .splineToLinearHeading(field.PRLB,0)
-                .addDisplacementMarker(() ->
-                        driver.turnAsync(field.HM))
+        parkC = driver.trajectoryBuilder(wobbleCI.end())
+                .lineToSplineHeading(FieldCoordinatesB.PAL)
                 .build();
 
-        Trajectory park = driver.trajectoryBuilder(recoveryC.end())
+        Trajectory park = driver.trajectoryBuilder(wobbleCI.end())
                 .lineToSplineHeading(field.PAL)
                 .build();
 
+        roller.tuckIn();
+        shooter.liftDown();
         hammer.preload();
-        waitForStart();
-        boolean turned = false;
-        stack = camera.height();
-        stack = 4;
-        switch(stack) {
-            case 0:
-                wobbleTraj = wobbleA;
-                break;
-            case 1:
-                wobbleTraj = wobbleB;
-                break;
-            case 4:
-                wobbleTraj = wobbleC;
-                break;
-        }
-
-
-        /*
-        while(!isStopRequested() && opModeIsActive()) {
+        int stack = 0;
+        while(!opModeIsActive()&&!isStopRequested()){
             stack = camera.height();
             telemetry.addData("Stack height", stack);
             telemetry.update();
-        }*/
+        }
+        boolean turned = false;
 
-
-        //while (!isStopRequested() && opModeIsActive()&&!Thread.currentThread().isInterrupted()) {
-
-       // }
-
-
-        roller.tuckIn();
         shooter.timedCancel();
         runtime.reset();
 
+        boolean aligned = false;
         boolean noRepeat = false;
-        boolean secondIntake = false;
 
-        wait lift = new wait(1, true);
-        wait liftD = new wait(.2,false);
-        //wait takeIn = new wait(runtime,3,true);
-        wait preload = new wait(.5, false);
-        wait shotTimer = new wait(.7,true);
-        wait retract = new wait(.4,false);
+        wait lift = autoTimer.lift;
+        wait liftD = autoTimer.liftD;
+        wait preload = autoTimer.preload;
+        wait shotTimer = autoTimer.shotTimer;
+        wait retract = autoTimer.retract;
+        autoTimer.start();
         lift.init();
         shotTimer.init();
         driver.followTrajectoryAsync(pShot);
@@ -218,10 +167,44 @@ public class BInnerNoP  extends LinearOpMode {
             PoseStorage.currentPose = curPose;
 
             switch (currentState) {
-                case powerShot:
-                    shooter.goalVelo = 19;
-                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,true));
+                case preLoad:
                     preload.init();
+                    shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
+
+                    if(!driver.isBusy()&&lift.timeUp()&&preload.timeUp()&&lift.init){
+                        if(!aligned){
+                            driver.turnAsync(field.HM);
+                            aligned = true;
+                        }else {
+                            shooter.timedFireN(hardReader.shooterV);
+                            if (shooter.done) {
+                                shooter.timedCancel();
+                                shooter.liftDown();
+                                aligned = false;
+                                switch (stack) {
+                                    case 0:
+                                        // drive to drop wobble
+                                        driver.followTrajectoryAsync(wobbleA);
+                                        hammer.lowLift();
+                                        currentState = State.park;
+                                        break;
+                                    case 1:
+                                        // drive to intake stack
+                                        driver.followTrajectoryAsync(wobbleB);
+                                        hammer.lowLift();
+                                        currentState = State.park;
+                                        break;
+                                    case 4:
+                                        // drive to intake stack
+                                        driver.followTrajectoryAsync(wobbleC);
+                                        hammer.lowLift();
+                                        currentState = State.park;
+                                        break;
+                                }
+                                shooter.doneReset();
+                            }
+                        }
+                    }
                     if(preload.timeUp()){
                         hammer.partialLift();
                         if(!noRepeat) {
@@ -230,120 +213,18 @@ public class BInnerNoP  extends LinearOpMode {
                             noRepeat = true;
                         }
                     }
-
-                    if(!driver.isBusy()&&lift.timeUp()&&preload.timeUp()&&lift.init) {
-                        switch(currentShot){
-                            case turnL:
-                                driver.turnAsync(FieldCoordinatesB.PL);
-                                currentShot = Powershot.left;
-                                break;
-                            case left:
-                                if(!shotTimer.timeUp()&&shooter.atSpeed(hardReader.shooterV)){
-                                    gen.pusherServo.setPosition(shooter.rightPusherPos);
-                                    retract.init();
-                                    if(retract.timeUp()){
-                                        gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                    }
-                                }
-                                if(retract.timeUp()&&shotTimer.timeUp()){
-                                    gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                    driver.turnAsync(FieldCoordinatesB.PM);
-                                    retract.deinit();
-                                    shotTimer.init();
-                                    currentShot = Powershot.middle;
-                                }
-                                break;
-                            case middle:
-                                if(!shotTimer.timeUp()&&shooter.atSpeed(hardReader.shooterV)) {
-                                    gen.pusherServo.setPosition(shooter.rightPusherPos);
-                                    retract.init();
-                                    if(retract.timeUp()){
-                                        gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                    }
-                                }
-                                if(retract.timeUp()&&shotTimer.timeUp()){
-                                        gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                        driver.turnAsync(field.PR);
-                                        retract.deinit();
-                                        shotTimer.init();
-                                        currentShot = Powershot.right;
-                                }
-                                break;
-                            case right:
-                                if(!shotTimer.timeUp()&&shooter.atSpeed(hardReader.shooterV)) {
-                                    gen.pusherServo.setPosition(shooter.rightPusherPos);
-                                    retract.init();
-                                    if(retract.timeUp()){
-                                        gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                    }
-                                }
-                                if(shotTimer.timeUp() && retract.timeUp()){
-                                        shooter.liftDown();
-                                        if(liftD.timeUp()) {
-                                            driver.followTrajectoryAsync(bb1);
-                                            currentState = State.bounceBack;
-                                            retract.deinit();
-                                            roller.fallOut();
-                                            roller.upToSpeed();
-                                        }
-                                }else{
-                                        liftD.deinit();
-                                        liftD.init();
-                                    }
-                                break;
-                        }
-
-                    }else{
-                        shotTimer.init();
-                    }
-                    break;
-                case bounceBack:
-                    if(!driver.isBusy()) {
-                        shooter.goalVelo = 21;
-                        hammer.release();
-                        hammer.partialLift();
-                        lift.init();
-                        roller.upToSpeed(0);
-                        roller.tuckIn();
-                        shooter.liftUp();
-                        switch(stack) {
-                            case 0:
-                                driver.followTrajectoryAsync(recoveryA);
-                                break;
-                            case 1:
-                                driver.followTrajectoryAsync(recoveryB);
-                                break;
-                            case 4:
-                                driver.followTrajectoryAsync(recoveryC);
-                                break;
-                        }
-                        currentState = State.recovery;
-                    }
-                    break;
-                case recovery:
-                    if(!driver.isBusy()&&lift.timeUp()) {
-                        shooter.timedFireN(hardReader.shooterV);
-                        if (shooter.done) {
-                            gen.pusherServo.setPosition(hood.leftPusherPos);
-                            shooter.timedCancel();
-                            shooter.liftDown();
-                            lift.deinit();
-                            driver.followTrajectoryAsync(park);
-                            currentState = State.park;
-                        }
-                    }
                     break;
                 case park:
                     if(!driver.isBusy()){
                         shooter.liftDown();
+                        hammer.lift();
                     }
-                    hammer.lift();
                     break;
             }
-                driver.update();
+            driver.update();
 
 
-            if(currentState == State.powerShot || currentState == State.recovery){
+            if(currentState == State.preLoad){
                 shooter.upToSpeed(hardReader.shooterV, runtime.seconds());
             }
             else{

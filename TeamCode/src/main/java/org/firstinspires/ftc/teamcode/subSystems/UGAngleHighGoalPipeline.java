@@ -42,8 +42,8 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     private double cameraPitchOffset;
     private double cameraYawOffset;
 
-    public static double fov = 78;
-    public static double XCenter = 160;
+    public static double fov = 80; //78 for old camera
+    public static double XCenter = 320; //160
     private double horizontalFocalLength;
     private double verticalFocalLength;
     public Telemetry telemetry;

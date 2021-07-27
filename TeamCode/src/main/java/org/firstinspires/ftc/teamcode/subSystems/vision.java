@@ -18,8 +18,8 @@ import static java.lang.Thread.sleep;
 
 @Config
 public class vision {
-    public static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
-    public static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
+    public static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
+    public static final int CAMERA_HEIGHT = 360; // height of wanted camera resolution
 
     public static int HORIZON = 100; // horizon value to tune
     public static int HORIZONX = 30;
@@ -32,6 +32,11 @@ public class vision {
     private OpenCvCamera camera;
     private LinearOpMode opMode;
     private boolean stack = true;
+    public static double lf = 0.0, ls = 147.0, lt =0.0;
+    public static double hf = 255.0, hs = 189.0, ht = 120.0;
+    public static Scalar lowBound = new Scalar(lf, ls, lt);
+    public static Scalar highBound = new Scalar(hf,hs, ht);
+    public static int minWidth = 33;
     public vision(LinearOpMode opMode){
         this.opMode = opMode;
         int cameraMonitorViewId = this
@@ -53,24 +58,24 @@ public class vision {
         }
 
         camera.setPipeline(pipeline = new UGContourRingPipe(opMode.telemetry, DEBUG));
-        UGContourRingPipe.Config.setLowerOrange(new Scalar(0.0, 147.0, 0.0));
-        UGContourRingPipe.Config.setUpperOrange(new Scalar(255.0,189.0, 120.0));
+        //UGContourRingPipe.Config.setLowerOrange(new Scalar(lf, ls, lt));
+        //UGContourRingPipe.Config.setUpperOrange(new Scalar(hf,hs, ht));
         //UGContourRingPipeline.Config.setLowerOrange(new Scalar(0.0, 0, 0.0));
         //UGContourRingPipeline.Config.setUpperOrange(new Scalar(255.0,255.0, 255.0));
 
         UGContourRingPipe.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
         UGContourRingPipe.Config.setHORIZON(HORIZON);
         UGContourRingPipe.Config.setHORIZONX(HORIZONX);
-       // camera.openCameraDevice();
-      //  camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+       camera.openCameraDevice();
+       camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
 
 
 
         // states camera code
-        camera.openCameraDeviceAsync(() ->{
-            camera.openCameraDevice();
-            camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
-        });
+        //camera.openCameraDeviceAsync(() ->{
+          //  camera.openCameraDevice();
+           // camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+        //});
 
 
 
@@ -93,6 +98,13 @@ public class vision {
             }
         }
         return 69;
+    }
+    public static void updateColor(){
+       //UGContourRingPipe.Config.setLowerOrange(lowBound);
+        //UGContourRingPipe.Config.setUpperOrange(highBound);
+        UGContourRingPipe.Config.setMIN_WIDTH(minWidth);
+
+
     }
     public void highGoal(){
         stack = false;

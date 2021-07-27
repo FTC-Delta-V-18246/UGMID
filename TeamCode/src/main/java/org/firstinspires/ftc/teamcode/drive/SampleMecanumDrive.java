@@ -112,7 +112,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     //public static double kPR = 0, kDR = 0;
     public static double turnAccept = 1;
-    public static double kP = .3, kD = 0, kF = .2;   //.5,0,.2
+    public static double kP = 0, kD = 0, kF = .2;   //.5,0,.2
     public static PIDMath rotation= new PIDMath(kP,0, kD);
     private double targetAngleCustom;
     private Point targetPointCustom;

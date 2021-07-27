@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstra
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -30,7 +31,7 @@ import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesR;
 
 import java.util.Arrays;
-
+@Disabled
 @Autonomous
 @Config
 public class R119 extends LinearOpMode {

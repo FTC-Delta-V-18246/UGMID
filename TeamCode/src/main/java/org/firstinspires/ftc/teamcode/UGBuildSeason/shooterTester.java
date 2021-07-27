@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
 import org.firstinspires.ftc.teamcode.subSystems.intake;
@@ -33,7 +32,7 @@ import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
 @TeleOp
 @Config
-public class wraithtester extends LinearOpMode {
+public class shooterTester extends LinearOpMode {
 
     public enum RobotState {
         INDEXING,
@@ -103,80 +102,28 @@ public class wraithtester extends LinearOpMode {
             y1.readValue();
             a1.readValue();
 
-            /*
-            if(gamepad1.b){
-                telemetry.addData("Stack",camera.height());
-                gen.outerRollerMII.setPower(0);
-                gen.outerRollerMI.setPower(0);
-            }else{
-                gen.outerRollerMII.setPower(1);
-                gen.outerRollerMI.setPower(0);
-            }
-
-*/
-            if(gamepad1.dpad_left){
-                driver.turnAsync(field.PL);
-            }else if(gamepad1.dpad_right){
-                driver.turnAsync(field.PR);
-            }
-            else if(gamepad1.dpad_down){
-                driver.turnAsync(field.PM);
-            }else if(gamepad1.dpad_up){
-                driver.setPoseEstimate(new Pose2d(0,0,0));
-            }
-
-
-
-            shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
+            //shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
             if(gamepad1.right_bumper){
-                shooter.timedFireN(hardReader.shooterV);
+                shooter.timedFireN(21);
             }else{
                 shooter.timedCancel();
+                shooter.doneReset();
             }
-            /*
-            if(gamepad1.b&&!shooter.done){
-                shooter.timedFireN(hardReader.shooterV);
-                roller.upToSpeed(0);
-            }else if(gamepad1.a){
-                shooter.timedCancel();
-               // roller.upToSpeed();
-            }else
-            {
-                roller.upToSpeed(0);
-            }
-            if(!gamepad1.b){
-                shooter.done = false;
-                shooter.timedCancel();
-            }*/
-/*
-           roller.upToSpeed();
-            if(gamepad1.b){
-                subs.magTrak.tunerReset();
-                shooter.liftDown();
-            }
-            //driver.update();
-            roller.fallOut();
-            telemetry.update();
-            if(subs.magTrak.counter(hardReader.curX, hardReader.curV)>2){
-                shooter.liftUp();
+            if(shooter.done){
+                shooter.toPosition(.28);
             }else{
-                //shooter.toPosition(.22);
+                //shooter.toPosition(.2);
             }
 
- */
-            shooter.raiseToAngle(pos);
+
             subs.hammer.partialLift();
             shooter.liftUp();
             //driver.update();
             FtcDashboard dashboard = FtcDashboard.getInstance();
-
-            double distance = Math.sqrt(Math.pow(field.HM.x-driver.getPoseEstimate().getX(),2)+ Math.pow(field.HM.y-driver.getPoseEstimate().getY(),2));
-            telemetry.addData("distance",distance);
-            telemetry.update();
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("rings in canister", subs.magTrak.counter(hardReader.curX, hardReader.curV));
-            packet.put("ring pos", hardReader.curX);
-            packet.put("ring velo",hardReader.curV);
+            packet.put("shots fired",shooter.shots);
+            packet.put("done?",shooter.done);
+            packet.put("retract time",shooter.retractTime.milliseconds());
             dashboard.sendTelemetryPacket(packet);
         }
     }

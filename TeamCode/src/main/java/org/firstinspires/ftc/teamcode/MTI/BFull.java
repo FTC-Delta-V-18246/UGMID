@@ -5,13 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
@@ -21,11 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.apache.commons.math3.stat.descriptive.moment.VectorialCovariance;
-import org.firstinspires.ftc.teamcode.UGBuildSeason.Bbasic;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.*;
-import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
@@ -33,18 +22,18 @@ import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
 import org.firstinspires.ftc.teamcode.subSystems.intake;
 import org.firstinspires.ftc.teamcode.subSystems.reader;
-import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator.*;
+import org.firstinspires.ftc.teamcode.subSystems.stockTimer;
+import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
 import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
 import java.util.Arrays;
-import java.util.Vector;
 
 @Autonomous
 @Config
-public class BOuter extends LinearOpMode{
+public class BFull extends LinearOpMode{
     private SampleMecanumDrive driver;
     private reader hardReader;
     private hood shooter;
@@ -54,13 +43,14 @@ public class BOuter extends LinearOpMode{
     private stockTimer autoTimer;
 
     private ElapsedTime runtime = new ElapsedTime();
-
+    private Trajectory wobbleA2I, wobbleB2I, wobbleC2I,parkA,parkB,parkC;
     private enum State{
         preLoad,
         stackB,
         stackC,
         stackCI,
         wobbleI,
+        wobbleII,
         park
     }
     Trajectory backUp, forward;
@@ -100,7 +90,25 @@ public class BOuter extends LinearOpMode{
         Trajectory wobbleA = driver.trajectoryBuilder(preL.end())
                 .lineToSplineHeading(field.WAI)
                 .build();
-        Trajectory parkA = driver.trajectoryBuilder(wobbleA.end())
+        Trajectory wobbleA2 = driver.trajectoryBuilder(wobbleA.end())
+                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(wobbleA2I)
+                )
+                .build();
+        wobbleA2I = driver.trajectoryBuilder(wobbleA2.end())
+                .lineToSplineHeading(field.WAII)
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .addDisplacementMarker(()->
+                        hammer.release())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(parkA)
+                )
+                .build();
+        parkA = driver.trajectoryBuilder(wobbleA2I.end())
                 //.splineToConstantHeading(new Vector2d(-10,30),0)
                 .splineToLinearHeading(field.PAM,0)
                 .build();
@@ -112,9 +120,26 @@ public class BOuter extends LinearOpMode{
         Trajectory wobbleB = driver.trajectoryBuilder(stackBI.end())
                 .lineToLinearHeading(field.WBI)
                 .build();
-        Trajectory parkB = driver.trajectoryBuilder(wobbleB.end())
+        Trajectory wobbleB2 = driver.trajectoryBuilder(wobbleB.end())
+                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .build();
+        wobbleB2I = driver.trajectoryBuilder(wobbleB2.end())
+                .lineToSplineHeading(field.WBII)
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .addDisplacementMarker(()->
+                        hammer.release())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(parkB)
+                )
+                .build();
+        parkB = driver.trajectoryBuilder(wobbleB2I.end())
                 .lineToSplineHeading(field.PAR)
                 .build();
+
+
 
         wait takeIn = new wait(3,true);
 
@@ -153,8 +178,23 @@ public class BOuter extends LinearOpMode{
         Trajectory wobbleC = driver.trajectoryBuilder(last.end())
                 .lineToSplineHeading(field.WCI)
                 .build();
+        Trajectory wobbleC2 = driver.trajectoryBuilder(wobbleC.end())
+                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .build();
+        wobbleC2I = driver.trajectoryBuilder(wobbleC2.end())
+                .lineToSplineHeading(field.WCII)
+                .addDisplacementMarker(()->
+                        hammer.down())
+                .addDisplacementMarker(()->
+                        hammer.release())
+                .addDisplacementMarker(() ->
+                        driver.followTrajectoryAsync(parkC)
+                )
+                .build();
 
-        Trajectory parkC = driver.trajectoryBuilder(wobbleC.end())
+        parkC = driver.trajectoryBuilder(wobbleC2I.end())
                 .lineToSplineHeading(field.PAR)
                 .build();
 
@@ -169,6 +209,7 @@ public class BOuter extends LinearOpMode{
             telemetry.addData("Stack height", stack);
             telemetry.update();
         }
+
         roller.fallOut();
         shooter.doneReset();
         shooter.timedCancel();
@@ -182,6 +223,7 @@ public class BOuter extends LinearOpMode{
         wait liftD = autoTimer.liftD;
         wait preload = autoTimer.preload;
         wait wobblePause = autoTimer.wobblePause;
+        wait wobblePickup = autoTimer.wobblePickup;
         State currentState = State.preLoad;
         autoTimer.start();
         driver.followTrajectoryAsync(preL);
@@ -316,7 +358,7 @@ public class BOuter extends LinearOpMode{
                                 }else{
                                     shooter.timedFireN(hardReader.shooterV);
                                 }
-                                if (shooterDone) {
+                                if(shooterDone) {
                                     shooter.liftDown();
                                     if (liftD.timeUp()) {
                                         driver.followTrajectoryAsync(wobbleC);
@@ -345,28 +387,56 @@ public class BOuter extends LinearOpMode{
                         hammer.release();
                     }
                     if(!driver.isBusy()){
+                        wobblePickup.deinit();
                         switch(stack) {
                             case 0:
                                 if(wobblePause.timeUp()) {
-                                    driver.followTrajectoryAsync(parkA);
+                                    driver.followTrajectoryAsync(wobbleA2);
+                                    currentState = State.wobbleII;
+                                }
+                                break;
+                            case 1:
+                                driver.followTrajectoryAsync(wobbleB2);
+                                currentState = State.wobbleII;
+                                break;
+                            case 4:
+                                driver.followTrajectoryAsync(wobbleC2);
+                                currentState = State.wobbleII;
+                                break;
+                        }
+                    }
+                    break;
+                case wobbleII:
+                    if(!driver.isBusy()){
+                        wobblePickup.init();
+                        hammer.grab();
+                    }
+                    if(!driver.isBusy()&& wobblePickup.timeUp()){
+                        hammer.partialLift();
+                        switch(stack) {
+                            case 0:
+                                if(wobblePause.timeUp()) {
+                                    driver.followTrajectoryAsync(wobbleA2I);
                                     currentState = State.park;
                                 }
                                 break;
                             case 1:
-                                driver.followTrajectoryAsync(parkB);
+                                driver.followTrajectoryAsync(wobbleB2I);
                                 currentState = State.park;
                                 break;
                             case 4:
-                                driver.followTrajectoryAsync(parkC);
+                                driver.followTrajectoryAsync(wobbleC2I);
                                 currentState = State.park;
                                 break;
                         }
                     }
                     break;
                 case park:
-                    shooter.liftDown();
-                    hammer.partialLift();
-                    shooter.toPosition(shooter.levelFlap);
+                    if(!driver.isBusy()) {
+                        shooter.liftDown();
+                        hammer.partialLift();
+                        shooter.toPosition(shooter.levelFlap);
+                    }
                     break;
 
             }

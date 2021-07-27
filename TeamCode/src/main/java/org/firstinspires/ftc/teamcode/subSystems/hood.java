@@ -32,15 +32,15 @@ public class hood {
         public static double kPT, kDT;
         public static double interval = 150, rinterval = 100; // minimum of 45 (realistically 55)
         public static double veloRange = 3; //max of 3, probably could be increased if we increased rinterval
-        public static double flapH = .24, flapHB = .24; //24
+        public static double flapH = .235, flapHB = .24; //24
         public static double lowerFlap = .18, highFlap = .5, levelFlap = .22;
-        public static double lowerLift = .1, highLift = .8;
+        public static double lowerLift = .77, highLift = .3;
         public double shots = 0;
         public boolean save = false;
         boolean retracted = true;
         public boolean done = false;
         ElapsedTime shooterTime = new ElapsedTime();
-        ElapsedTime retractTime = new ElapsedTime();
+        public ElapsedTime retractTime = new ElapsedTime();
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
         private PIDMath highGoal;
@@ -70,15 +70,17 @@ public class hood {
 
             */
             if(!power) {
-                if (distance < 85) {
-                    return flapH + .00;
+                if (distance < 100) {
+                    return .24;
                 } else if (distance > 120) {
-                    return flapH -.01;
-                } else {
-                    return flapH;
+                    return .245;
+                } else if (distance>110){
+                    return .24;
+                }else{
+                    return .235;
                 }
             }else{
-                return .22;
+                return .265;
             }
         }
         public void raiseToAngle(double angle){
@@ -133,7 +135,7 @@ public class hood {
                 return false;
             }
         }
-    public void timedFireN(double curVelo){
+    public void timedFireNN(double curVelo){
        if(shots == 4){
            done = true;
            timedCancel();
@@ -149,6 +151,44 @@ public class hood {
             }
         opModeObj.telemetry.addData("Shots",shots);
         opModeObj.telemetry.addData("Retract time",retractTime.milliseconds());
+        opModeObj.telemetry.update();
+    }
+    public void timedFireN(double curVelo){
+        if(shots>=3){
+            done = true;
+
+        }
+        else{
+            if (retractTime.milliseconds() > 2.0 * rinterval) {
+                pusher.setPosition(leftPusherPos);
+                shots++;
+                retractTime.reset();
+            } else if (retractTime.milliseconds() > rinterval && atSpeed(curVelo)) {
+                pusher.setPosition(rightPusherPos);
+            }
+        }
+
+
+
+            /*
+        if (shots == 3) {
+            done = true;
+            timedCancel();
+        }
+            if(!done) {
+                if (retracted) {
+                    if (atSpeed(curVelo)) {
+                        timedShot();
+                    }
+                } else if (retractTime.milliseconds() > rinterval) {
+                    pusher.setPosition(leftPusherPos);
+                    if (retractTime.milliseconds() > 2 * rinterval) {
+                        retracted = true;
+                    }
+                }
+            }
+
+             */
     }
     public void doneReset(){
             timedCancel();
