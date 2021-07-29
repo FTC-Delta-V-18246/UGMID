@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subSystems.reader;
 import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.utilnonrr.ButtonReader;
-import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
+import org.firstinspires.ftc.teamcode.MTI.FieldCoordinatesB;
 import org.firstinspires.ftc.teamcode.utilnonrr.GamepadEx;
 import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
@@ -102,15 +101,17 @@ public class shooterTester extends LinearOpMode {
             y1.readValue();
             a1.readValue();
 
-            //shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
+            shooter.upToSpeed(hardReader.shooterV,runtime.seconds());
             if(gamepad1.right_bumper){
-                shooter.timedFireN(21);
+                shooter.timedFireN(hardReader.shooterV);
             }else{
                 shooter.timedCancel();
                 shooter.doneReset();
             }
+
+            shooter.toPosition(pos);
             if(shooter.done){
-                shooter.toPosition(.28);
+
             }else{
                 //shooter.toPosition(.2);
             }
@@ -121,6 +122,7 @@ public class shooterTester extends LinearOpMode {
             //driver.update();
             FtcDashboard dashboard = FtcDashboard.getInstance();
             TelemetryPacket packet = new TelemetryPacket();
+            packet.put("velo",hardReader.shooterV);
             packet.put("shots fired",shooter.shots);
             packet.put("done?",shooter.done);
             packet.put("retract time",shooter.retractTime.milliseconds());

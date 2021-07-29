@@ -27,7 +27,6 @@ import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
 import org.firstinspires.ftc.teamcode.util.wait;
-import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
 
 import java.util.Arrays;
 
@@ -36,7 +35,7 @@ import java.util.Arrays;
 public class BFull extends LinearOpMode{
     private SampleMecanumDrive driver;
     private reader hardReader;
-    private hood shooter;
+    public hood shooter;
     private intake roller;
     private vision camera;
     private wobble hammer;
@@ -91,12 +90,9 @@ public class BFull extends LinearOpMode{
                 .lineToSplineHeading(field.WAI)
                 .build();
         Trajectory wobbleA2 = driver.trajectoryBuilder(wobbleA.end())
-                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .lineToSplineHeading(new Pose2d(-34, 26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
-                .addDisplacementMarker(() ->
-                        driver.followTrajectoryAsync(wobbleA2I)
-                )
                 .build();
         wobbleA2I = driver.trajectoryBuilder(wobbleA2.end())
                 .lineToSplineHeading(field.WAII)
@@ -121,7 +117,7 @@ public class BFull extends LinearOpMode{
                 .lineToLinearHeading(field.WBI)
                 .build();
         Trajectory wobbleB2 = driver.trajectoryBuilder(wobbleB.end())
-                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .lineToSplineHeading(new Pose2d(-34, 26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
                 .build();
@@ -136,7 +132,8 @@ public class BFull extends LinearOpMode{
                 )
                 .build();
         parkB = driver.trajectoryBuilder(wobbleB2I.end())
-                .lineToSplineHeading(field.PAR)
+                .splineToSplineHeading(field.PAM,0)
+                .splineToSplineHeading(field.PAR,0)
                 .build();
 
 
@@ -179,7 +176,7 @@ public class BFull extends LinearOpMode{
                 .lineToSplineHeading(field.WCI)
                 .build();
         Trajectory wobbleC2 = driver.trajectoryBuilder(wobbleC.end())
-                .lineToSplineHeading(new Pose2d(-32, 26, Math.PI))
+                .lineToSplineHeading(new Pose2d(-34, 26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
                 .build();
@@ -224,6 +221,7 @@ public class BFull extends LinearOpMode{
         wait preload = autoTimer.preload;
         wait wobblePause = autoTimer.wobblePause;
         wait wobblePickup = autoTimer.wobblePickup;
+        wait shotTimer = autoTimer.shotTimer;
         State currentState = State.preLoad;
         autoTimer.start();
         driver.followTrajectoryAsync(preL);
@@ -239,13 +237,22 @@ public class BFull extends LinearOpMode{
                     preload.init();
                     shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose,false));
 
+                    if(preload.timeUp()){
+                        hammer.partialLift();
+                        if(!noRepeat) {
+                            lift.init();
+                            shooter.liftUp();
+                            noRepeat = true;
+                        }
+                    }
+
                     if(!driver.isBusy()&&lift.timeUp()&&preload.timeUp()&&lift.init){
                         if(!aligned){
                             driver.turnAsync(field.HM);
                             aligned = true;
                         }else {
                             shooter.timedFireN(hardReader.shooterV);
-                            if (shooter.done) {
+                            if (shooter.done &&shotTimer.timeUp()) {
                                 shooter.timedCancel();
                                 shooter.liftDown();
                                 aligned = false;
@@ -273,14 +280,10 @@ public class BFull extends LinearOpMode{
                                 }
                                 shooter.doneReset();
                             }
-                        }
-                    }
-                    if(preload.timeUp()){
-                        hammer.partialLift();
-                        if(!noRepeat) {
-                            lift.init();
-                            shooter.liftUp();
-                            noRepeat = true;
+                            if(!shooter.done) {
+                                shotTimer.deinit();
+                                shotTimer.init();
+                            }
                         }
                     }
                     break;
@@ -390,10 +393,8 @@ public class BFull extends LinearOpMode{
                         wobblePickup.deinit();
                         switch(stack) {
                             case 0:
-                                if(wobblePause.timeUp()) {
                                     driver.followTrajectoryAsync(wobbleA2);
                                     currentState = State.wobbleII;
-                                }
                                 break;
                             case 1:
                                 driver.followTrajectoryAsync(wobbleB2);
@@ -407,6 +408,9 @@ public class BFull extends LinearOpMode{
                     }
                     break;
                 case wobbleII:
+                    if(driver.isBusy()){
+                        wobblePickup.deinit();
+                    }
                     if(!driver.isBusy()){
                         wobblePickup.init();
                         hammer.grab();
@@ -415,10 +419,9 @@ public class BFull extends LinearOpMode{
                         hammer.partialLift();
                         switch(stack) {
                             case 0:
-                                if(wobblePause.timeUp()) {
+
                                     driver.followTrajectoryAsync(wobbleA2I);
                                     currentState = State.park;
-                                }
                                 break;
                             case 1:
                                 driver.followTrajectoryAsync(wobbleB2I);
@@ -434,6 +437,7 @@ public class BFull extends LinearOpMode{
                 case park:
                     if(!driver.isBusy()) {
                         shooter.liftDown();
+                        gen.pusherServo.setPosition(shooter.leftPusherPos);
                         hammer.partialLift();
                         shooter.toPosition(shooter.levelFlap);
                     }
@@ -442,10 +446,11 @@ public class BFull extends LinearOpMode{
             }
 
             telemetry.addData("State",currentState);
-            telemetry.addData("Intake timer",takeIn.timeUp());
-            telemetry.addData("Intake clock", takeIn.waitClock.seconds());
-            telemetry.addData("Driver busy?", driver.isBusy());
+            //telemetry.addData("Intake timer",takeIn.timeUp());
+           // telemetry.addData("Intake clock", takeIn.waitClock.seconds());
+           // telemetry.addData("Driver busy?", driver.isBusy());
             telemetry.addData("Shooter done?",shooterDone);
+            telemetry.addData("ALigned?",aligned);
             telemetry.update();
             driver.update();
 

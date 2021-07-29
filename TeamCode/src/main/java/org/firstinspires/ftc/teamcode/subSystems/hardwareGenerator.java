@@ -77,7 +77,7 @@ public class hardwareGenerator {
         outerRollerMI.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         wobblePivot = opModeObj.hardwareMap.get(Servo.class, "wobble_pivot");
-        wobblePivot.setDirection(Servo.Direction.REVERSE);
+        //wobblePivot.setDirection(Servo.Direction.REVERSE);
         wobbleClaw = opModeObj.hardwareMap.get(Servo.class,"wobble_claw");
         //wobbleClaw.setDirection(Servo.Direction.REVERSE);
 

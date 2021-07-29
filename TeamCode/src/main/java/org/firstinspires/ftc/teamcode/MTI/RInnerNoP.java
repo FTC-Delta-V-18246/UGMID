@@ -1,28 +1,31 @@
 package org.firstinspires.ftc.teamcode.MTI;
+
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.*;
-import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
+import org.firstinspires.ftc.teamcode.subSystems.intake;
 import org.firstinspires.ftc.teamcode.subSystems.reader;
+import org.firstinspires.ftc.teamcode.subSystems.stockTimer;
+import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
+import org.firstinspires.ftc.teamcode.util.wait;
 
 @Autonomous
 @Config
-public class BInnerNoP extends LinearOpMode {
+public class RInnerNoP extends LinearOpMode {
     private SampleMecanumDrive driver;
     private reader hardReader;
     private hood shooter;
@@ -54,7 +57,7 @@ public class BInnerNoP extends LinearOpMode {
         this.hammer = subs.hammer;
         this.autoTimer = subs.autoTimer;
 
-        FieldCoordinatesB field = new FieldCoordinatesB();
+        FieldCoordinatesR field = new FieldCoordinatesR();
         State currentState = State.preLoad;
         Pose2d startPose = new Pose2d(-64, 25, 0);
         driver.setPoseEstimate(startPose);
@@ -73,7 +76,7 @@ public class BInnerNoP extends LinearOpMode {
                         driver.followTrajectoryAsync(parkA))
                 .build();
         parkA = driver.trajectoryBuilder(wobbleA.end())
-                .lineToSplineHeading(FieldCoordinatesB.PAL)
+                .lineToSplineHeading(FieldCoordinatesR.PAL)
                 .build();
 
         wobbleB = driver.trajectoryBuilder(pShot.end())
@@ -82,7 +85,7 @@ public class BInnerNoP extends LinearOpMode {
                         driver.followTrajectoryAsync(wobbleBI))
                 .build();
         wobbleBI = driver.trajectoryBuilder(wobbleB.end())
-                .splineToLinearHeading(FieldCoordinatesB.WBIB,0)
+                .splineToLinearHeading(FieldCoordinatesR.WBIB,0)
                 .addDisplacementMarker(() ->
                         hammer.down())
                 .addDisplacementMarker(() ->
@@ -91,7 +94,7 @@ public class BInnerNoP extends LinearOpMode {
                         driver.followTrajectoryAsync(parkB))
                 .build();
         parkB = driver.trajectoryBuilder(wobbleBI.end())
-                .lineToSplineHeading(FieldCoordinatesB.PAL)
+                .lineToSplineHeading(FieldCoordinatesR.PAL)
                 .build();
         wobbleC = driver.trajectoryBuilder(pShot.end())
                 .splineToLinearHeading(new Pose2d(30,30,Math.PI),0)
@@ -108,7 +111,7 @@ public class BInnerNoP extends LinearOpMode {
                     driver.followTrajectoryAsync(parkC))
                 .build();
         parkC = driver.trajectoryBuilder(wobbleCI.end())
-                .lineToSplineHeading(FieldCoordinatesB.PAL)
+                .lineToSplineHeading(FieldCoordinatesR.PAL)
                 .build();
 
         Trajectory park = driver.trajectoryBuilder(wobbleCI.end())

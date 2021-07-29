@@ -13,7 +13,6 @@
  import com.qualcomm.robotcore.hardware.DcMotorEx;
  import com.qualcomm.robotcore.util.ElapsedTime;
 
- import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
  import org.firstinspires.ftc.teamcode.subSystems.UGAngleHighGoalPipeline;
@@ -25,7 +24,6 @@
  import org.firstinspires.ftc.teamcode.subSystems.vision;
  import org.firstinspires.ftc.teamcode.util.wait;
  import org.firstinspires.ftc.teamcode.utilnonrr.ButtonReader;
- import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
  import org.firstinspires.ftc.teamcode.utilnonrr.GamepadEx;
  import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
@@ -194,7 +192,7 @@
                  driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
              }else if(turning && shooterState == RobotState.HIGH){
                  if(align.goalline.isBlueVisible()) {
-                     driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, align.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),Math.toDegrees(hardReader.curPose.getHeading())+90);
+                     driver.driveFieldCentric(0, 0, align.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),Math.toDegrees(hardReader.curPose.getHeading())+90);
                  }else{
                      driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, Math.toDegrees(hardReader.curPose.getHeading())+90);
                      //driver.rotation.calculateGain(driver.turnToAbsolute(field.HM, hardReader.curPose), runtime.seconds());
@@ -249,7 +247,9 @@
              double t1 = runtime.milliseconds() / cycles;
 
              telemetry.addData("Loop time", t1);
-             telemetry.addData("shooter velo", hardReader.shooterV);
+             //telemetry.addData("shooter velo", hardReader.shooterV);
+             telemetry.addData("Turning",turning);
+             telemetry.addData("blue visible", align.goalline.isBlueVisible());
           //   telemetry.addData("Intake amps", gen.outerRollerMI.getCurrent(CurrentUnit.AMPS)+gen.outerRollerMII.getCurrent(CurrentUnit.AMPS));
           //   telemetry.addData("Shooter amps", gen.flyWheelM.getCurrent(CurrentUnit.AMPS)+gen.flyWheelM1.getCurrent(CurrentUnit.AMPS));
           //   telemetry.addData("Drive amps", gen.frontRightM.getCurrent(CurrentUnit.AMPS)+gen.frontLeftM.getCurrent(CurrentUnit.AMPS)+gen.backLeftM.getCurrent(CurrentUnit.AMPS)+gen.backRightM.getCurrent(CurrentUnit.AMPS));
@@ -257,8 +257,9 @@
              telemetry.addData("y", hardReader.curPose.getY());
              telemetry.addData("heading", hardReader.curPose.getHeading());
              telemetry.addData("State ",shooterState);
-             telemetry.addData("ring velo", subs.magTrak.curVelo);
-             telemetry.addData("ring pos", subs.hardReader.curX);
+             //telemetry.addData("ring velo", subs.magTrak.curVelo);
+             //telemetry.addData("ring pos", subs.hardReader.curX);
+             telemetry.addData("Angle BLUE", align.goalline.calculateYaw(UGAngleHighGoalPipeline.Target.BLUE));
              telemetry.update();
 
 

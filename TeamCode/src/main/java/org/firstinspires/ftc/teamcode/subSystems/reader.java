@@ -40,14 +40,14 @@ public class reader {
     }
 
     public void autonRead(){
-        curX = gen.magSensor.getDistance(DistanceUnit.MM);
+      //  curX = gen.magSensor.getDistance(DistanceUnit.MM);
         bulkManualClear();
         veloRead();
         odoRead();
 
     }
     public void teleRead(){
-        curX = gen.magSensor.getDistance(DistanceUnit.MM);
+      //  curX = gen.magSensor.getDistance(DistanceUnit.MM);
         curV = (curX-prevX);///(timer.seconds()-prevT);
         prevT = timer.seconds();
         prevX = curX;

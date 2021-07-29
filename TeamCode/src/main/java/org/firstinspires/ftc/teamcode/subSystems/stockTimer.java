@@ -12,7 +12,7 @@ public class stockTimer {
         shotTimer = new wait(.7,true);
         retract = new wait(.4,false);
         wobblePause = new wait(18,true);
-        wobblePickup = new wait(1,false);
+        wobblePickup = new wait(1.2,false);
 
     }
     public void start(){

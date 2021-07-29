@@ -22,7 +22,7 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
     protected double centerX;
     protected double centerY;
 
-    public static int minThreshold = 190, maxThreshold = 200;  //150-175 on min depending on how frquently goal disappears
+    public static int minThreshold = 160, maxThreshold = 200;  //150-175 on min depending on how frquently goal disappears
     public static double minArea = 0;
     private Mat blueThreshold;
     private Mat redThreshold;

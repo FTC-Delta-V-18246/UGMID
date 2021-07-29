@@ -1,28 +1,31 @@
 package org.firstinspires.ftc.teamcode.MTI;
+
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.*;
-import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
+import org.firstinspires.ftc.teamcode.subSystems.intake;
 import org.firstinspires.ftc.teamcode.subSystems.reader;
+import org.firstinspires.ftc.teamcode.subSystems.stockTimer;
+import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
+import org.firstinspires.ftc.teamcode.util.wait;
 
 @Autonomous
 @Config
-public class BInnerYesP extends LinearOpMode {
+public class RInnerYesP extends LinearOpMode {
     private SampleMecanumDrive driver;
     private reader hardReader;
     private hood shooter;
@@ -65,7 +68,7 @@ public class BInnerYesP extends LinearOpMode {
         this.hammer = subs.hammer;
         this.autoTimer = subs.autoTimer;
 
-        FieldCoordinatesB field = new FieldCoordinatesB();
+        FieldCoordinatesR field = new FieldCoordinatesR();
         State currentState = State.powerShot;
         Powershot currentShot = Powershot.turnL;
         Pose2d startPose = new Pose2d(-64, 25, 0);
@@ -102,7 +105,7 @@ public class BInnerYesP extends LinearOpMode {
                         driver.followTrajectoryAsync(wobbleBI))
                 .build();
         wobbleBI = driver.trajectoryBuilder(wobbleB.end())
-                .splineToLinearHeading(FieldCoordinatesB.WBIB,0)
+                .splineToLinearHeading(FieldCoordinatesR.WBIB,0)
                 .addDisplacementMarker(() ->
                         hammer.down())
                 .build();
@@ -207,7 +210,7 @@ public class BInnerYesP extends LinearOpMode {
                         driver.setWeightedDrivePower(new Pose2d(0,0,0));
                         switch(currentShot){
                             case turnL:
-                                driver.turnAsync(FieldCoordinatesB.PL);
+                                driver.turnAsync(FieldCoordinatesR.PL);
                                 currentShot = Powershot.left;
                                 break;
                             case left:
@@ -220,7 +223,7 @@ public class BInnerYesP extends LinearOpMode {
                                 }
                                 if(retract.timeUp()&&shotTimer.timeUp()){
                                     gen.pusherServo.setPosition(shooter.leftPusherPos);
-                                    driver.turnAsync(FieldCoordinatesB.PM);
+                                    driver.turnAsync(FieldCoordinatesR.PM);
                                     retract.deinit();
                                     shotTimer.init();
                                     currentShot = Powershot.middle;

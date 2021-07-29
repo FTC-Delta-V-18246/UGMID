@@ -94,8 +94,8 @@ class UGContourRingPipe(
          * set to var in-case user wants to use their own tuned values
          * stored in YCrCb format **/
 
-        @JvmField var lf = 100.0
-        @JvmField var ls= 160.0
+        @JvmField var lf = 40.0
+        @JvmField var ls= 135.0
         @JvmField var lt= 80.0
         @JvmField var hf = 215.0
         @JvmField var hs= 185.0

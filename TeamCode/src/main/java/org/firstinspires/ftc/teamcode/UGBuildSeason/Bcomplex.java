@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.*;
 import org.firstinspires.ftc.teamcode.util.wait;
-import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
+import org.firstinspires.ftc.teamcode.MTI.FieldCoordinatesB;
 
 @Autonomous
 @Config

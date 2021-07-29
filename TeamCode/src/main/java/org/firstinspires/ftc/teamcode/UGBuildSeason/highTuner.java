@@ -50,12 +50,14 @@ ElapsedTime runtime = new ElapsedTime();
         */
         runtime.reset();
         while (!isStopRequested() && opModeIsActive()) {
+            subs.hardReader.teleRead();
             telemetry.addData("Angle BLUE", camera.goalline.calculateYaw(UGAngleHighGoalPipeline.Target.BLUE));
             telemetry.addData("Angle RED", camera.goalline.calculateYaw(UGAngleHighGoalPipeline.Target.RED));
             telemetry.addData("RED?",camera.goalline.isRedVisible());
             telemetry.addData("BLUE?",camera.goalline.isBlueVisible());
+            subs.shooter.toPosition(.26);
             if(camera.goalline.isBlueVisible()) {
-               // subs.driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),0);
+                subs.driver.driveFieldCentric(gamepad1.left_stick_x, -gamepad1.left_stick_y, camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE),Math.toDegrees(subs.hardReader.curPose.getHeading())+90);
                 telemetry.addData("Which way", camera.goalline.angleAlign(UGAngleHighGoalPipeline.Target.BLUE));
             }else{
                 subs.driver.driveFieldCentric(0, 0,0, 0);

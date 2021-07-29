@@ -22,7 +22,6 @@
   import org.firstinspires.ftc.teamcode.subSystems.reader;
   import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
   import org.firstinspires.ftc.teamcode.utilnonrr.ButtonReader;
-  import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesR;
   import org.firstinspires.ftc.teamcode.utilnonrr.GamepadEx;
   import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 

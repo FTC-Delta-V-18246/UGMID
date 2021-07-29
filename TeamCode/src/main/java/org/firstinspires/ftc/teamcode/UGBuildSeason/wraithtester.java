@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.geometry.Point;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
 import org.firstinspires.ftc.teamcode.subSystems.intake;
@@ -22,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subSystems.reader;
 import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.utilnonrr.ButtonReader;
-import org.firstinspires.ftc.teamcode.utilnonrr.FieldCoordinatesB;
+import org.firstinspires.ftc.teamcode.MTI.FieldCoordinatesB;
 import org.firstinspires.ftc.teamcode.utilnonrr.GamepadEx;
 import org.firstinspires.ftc.teamcode.utilnonrr.GamepadKeys;
 
