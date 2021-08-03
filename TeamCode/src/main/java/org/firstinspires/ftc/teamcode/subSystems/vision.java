@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subSystems;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 //import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
 //import com.arcrobotics.ftclib.vision.UGContourRingPipeline;
@@ -18,11 +19,11 @@ import static java.lang.Thread.sleep;
 
 @Config
 public class vision {
-    public static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
-    public static final int CAMERA_HEIGHT = 360; // height of wanted camera resolution
+    public static final int CAMERA_WIDTH = 320; // width  of wanted camera resolution
+    public static final int CAMERA_HEIGHT = 240; // height of wanted camera resolution
 
     public static int HORIZON = 100; // horizon value to tune
-    public static int HORIZONX = 30;
+    public static int HORIZONX = 100;
     private static final boolean DEBUG = false; // if debug is wanted, change to true
 
     private static final boolean USING_WEBCAM = true; // change to true if using webcam
@@ -64,18 +65,23 @@ public class vision {
         //UGContourRingPipeline.Config.setUpperOrange(new Scalar(255.0,255.0, 255.0));
 
         UGContourRingPipe.Config.setCAMERA_WIDTH(CAMERA_WIDTH);
-        UGContourRingPipe.Config.setHORIZON(HORIZON);
-        UGContourRingPipe.Config.setHORIZONX(HORIZONX);
-       camera.openCameraDevice();
-       camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+       // UGContourRingPipe.Config.setHORIZON(HORIZON);
+       // UGContourRingPipe.Config.setHORIZONX(HORIZONX);
+       //camera.openCameraDevice();
+      //camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
 
 
 
         // states camera code
-        //camera.openCameraDeviceAsync(() ->{
-          //  camera.openCameraDevice();
-           // camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
-        //});
+       camera.openCameraDeviceAsync(() ->{
+           camera.openCameraDevice();
+           camera.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
+        });
+
+
+        FtcDashboard.getInstance().startCameraStream(camera,30);
+
+
 
 
 
@@ -102,7 +108,7 @@ public class vision {
     public static void updateColor(){
        //UGContourRingPipe.Config.setLowerOrange(lowBound);
         //UGContourRingPipe.Config.setUpperOrange(highBound);
-        UGContourRingPipe.Config.setMIN_WIDTH(minWidth);
+      //  UGContourRingPipe.Config.setMIN_WIDTH(minWidth);
 
 
     }

@@ -4,12 +4,17 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.*;
 import org.firstinspires.ftc.teamcode.util.wait;
@@ -19,6 +24,8 @@ import org.firstinspires.ftc.teamcode.subSystems.hood;
 import org.firstinspires.ftc.teamcode.subSystems.reader;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
+
+import java.util.Arrays;
 
 @Autonomous
 @Config
@@ -118,7 +125,9 @@ public class BInnerYesP extends LinearOpMode {
                 .build();
         Trajectory recoveryA = driver.trajectoryBuilder(wobbleA.end())
                 .splineToLinearHeading(new Pose2d(35,18,0),0)
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();
@@ -128,7 +137,9 @@ public class BInnerYesP extends LinearOpMode {
                         driver.followTrajectoryAsync(recoveryBI))
                 .build();
         recoveryBI = driver.trajectoryBuilder(recoveryB.end())
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();
@@ -138,7 +149,9 @@ public class BInnerYesP extends LinearOpMode {
                         driver.followTrajectoryAsync(recoveryCI))
                 .build();
         recoveryCI = driver.trajectoryBuilder(recoveryC.end())
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();
@@ -201,6 +214,9 @@ public class BInnerYesP extends LinearOpMode {
                             shooter.liftUp();
                             noRepeat = true;
                         }
+                    }
+                    else{
+                        lift.deinit();
                     }
 
                     if(!driver.isBusy()&&lift.timeUp()&&preload.timeUp()&&lift.init) {

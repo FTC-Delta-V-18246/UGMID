@@ -5,33 +5,34 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subSystems.*;
-import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.hood;
 import org.firstinspires.ftc.teamcode.subSystems.intake;
 import org.firstinspires.ftc.teamcode.subSystems.reader;
+import org.firstinspires.ftc.teamcode.subSystems.stockTimer;
+import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
+import org.firstinspires.ftc.teamcode.util.wait;
 
 import java.util.Arrays;
 
 @Autonomous
 @Config
-public class BOuter extends LinearOpMode{
+public class ROuter extends LinearOpMode{
     private SampleMecanumDrive driver;
     private reader hardReader;
     private hood shooter;
@@ -66,9 +67,9 @@ public class BOuter extends LinearOpMode{
         this.hammer = subs.hammer;
         this.autoTimer = subs.autoTimer;
 
-        FieldCoordinatesB field = new FieldCoordinatesB();
+        FieldCoordinatesR field = new FieldCoordinatesR();
 
-        Pose2d startPose = new Pose2d(-64,49, 0);
+        Pose2d startPose = new Pose2d(-64,-49, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
 

@@ -193,6 +193,9 @@ public class BInnerNoP extends LinearOpMode {
                             noRepeat = true;
                         }
                     }
+                    else{
+                        lift.deinit();
+                    }
                     break;
                 case park:
                     if(!driver.isBusy()){

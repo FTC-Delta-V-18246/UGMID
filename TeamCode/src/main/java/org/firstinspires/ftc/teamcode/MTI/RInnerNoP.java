@@ -59,7 +59,7 @@ public class RInnerNoP extends LinearOpMode {
 
         FieldCoordinatesR field = new FieldCoordinatesR();
         State currentState = State.preLoad;
-        Pose2d startPose = new Pose2d(-64, 25, 0);
+        Pose2d startPose = new Pose2d(-64, -25, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
 
@@ -80,7 +80,7 @@ public class RInnerNoP extends LinearOpMode {
                 .build();
 
         wobbleB = driver.trajectoryBuilder(pShot.end())
-                .splineToLinearHeading(new Pose2d(50,15,0),0)
+                .splineToLinearHeading(new Pose2d(50,-15,0),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleBI))
                 .build();
@@ -97,7 +97,7 @@ public class RInnerNoP extends LinearOpMode {
                 .lineToSplineHeading(FieldCoordinatesR.PAL)
                 .build();
         wobbleC = driver.trajectoryBuilder(pShot.end())
-                .splineToLinearHeading(new Pose2d(30,30,Math.PI),0)
+                .splineToLinearHeading(new Pose2d(30,-30,Math.PI),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleCI))
                 .build();

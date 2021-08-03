@@ -42,14 +42,14 @@ public class UGAngleHighGoalPipeline extends UGBasicHighGoalPipeline {
     private double cameraPitchOffset;
     private double cameraYawOffset;
 
-    public static double fov = 90; //78 for old camera
-    public static double XCenter = 320; //160
+    public static double fov = 78; //78 for old camera
+    public static double XCenter = 160; //160
     private double horizontalFocalLength;
     private double verticalFocalLength;
     public Telemetry telemetry;
-    public static double kP = .0005, kD = 0, kF = .1; // .02 and .2 for old
+    public static double kP = .01, kD = 0, kF = .17; // .02 and .2 for old
     private PIDMath turnController = new PIDMath(kP, 0, kD, kF);
-    public static double angleTolerance = 2;
+    public static double angleTolerance = 1;
     public enum Target {
         RED, BLUE
     }

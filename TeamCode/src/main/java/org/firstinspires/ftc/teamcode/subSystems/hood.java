@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.vuforia.Tracker;
 
 import org.firstinspires.ftc.teamcode.geometry.Point;
+import org.firstinspires.ftc.teamcode.util.wait;
 import org.firstinspires.ftc.teamcode.utilnonrr.FFFBMath;
 import org.firstinspires.ftc.teamcode.utilnonrr.PIDMath;
 
@@ -20,19 +21,20 @@ public class hood {
         LinearOpMode opModeObj;
         tracker magTrak;
         vision high;
-        public static double goalVelo = 22;
+        public static double goalVelo = 21;
         private DcMotorEx flyWheel1 = null;
         private DcMotorEx flyWheel2 = null;
         private Servo pusher;
         private Servo flap;
         private Servo lift;
+        private boolean fired = false;
         public static double leftPusherPos = .5, rightPusherPos = .37; //.3
         public static double kP = .6,kD = 0;
         public static double kV = .03, kS = 0;
         public static double kPT, kDT;
-        public static double interval = 150, rinterval = 100; // minimum of 45 (realistically 55)
+        public static double interval = 150, rinterval = 120; // minimum of 45 (realistically 55)
         public static double veloRange = 2; //max of 3, probably could be increased if we increased rinterval
-        public static double flapH = .235, flapHB = .24; //24
+        public static double flapH = .227, flapHB = .24; //24
         public static double lowerFlap = .18, highFlap = .5, levelFlap = .22;
         public static double lowerLift = .2, highLift = .84;
         public double shots = 0;
@@ -44,6 +46,8 @@ public class hood {
         private PIDMath flyWheel;
         private FFFBMath flyWheelf;
         private PIDMath highGoal;
+     //   public ElapsedTime retractProtector = new ElapsedTime();
+        private wait retractGiving = new wait(.3,false);
         public hood(LinearOpMode opMode, hardwareGenerator gen, tracker magTrak, vision camera){
             opModeObj = opMode;
             high = camera;
@@ -58,6 +62,7 @@ public class hood {
             lift = gen.liftServo;
             shooterTime.reset();
             shots =0;
+
         }
         public double calculateTargetShooterAngle(Point target, Pose2d robot, boolean power){
             double distance = Math.sqrt(Math.pow(target.x-robot.getX(),2)+ Math.pow(target.y-robot.getY(),2));
@@ -71,19 +76,19 @@ public class hood {
 
             */
             if(!power) {
-                goalVelo = 22;
+                goalVelo = 21;
                 if (distance < 84) {
-                    return .243;
+                    return flapH-.005;
                 } else if (distance < 108) {
-                    return .235;
+                    return flapH-.007;
                 } else if (distance<132){
-                    return .237;
+                    return flapH-.017;
                 }else{
-                    return .238;
+                    return flapH-.01;
                 }
             }else{
                 goalVelo = 18;
-                return .23;
+                return .235;
             }
         }
         public void raiseToAngle(double angle){
@@ -157,7 +162,7 @@ public class hood {
         opModeObj.telemetry.update();
     }
     public void timedFireN(double curVelo){
-        if(shots>=3){
+        if(shots>=5&&retracted){
             done = true;
         }else{
             done = false;
@@ -172,8 +177,9 @@ public class hood {
             }*/
         if(atSpeed(curVelo)&&retracted){
             timedShot();
+            fired = true;
         }
-        if (retractTime.milliseconds() > rinterval) {
+        if (retractTime.milliseconds() > rinterval && fired) {
             pusher.setPosition(leftPusherPos);
             if(retractTime.milliseconds()>2*rinterval) {
                 retracted = true;
@@ -228,7 +234,12 @@ public class hood {
             lift.setPosition(highLift);
     }
     public void liftDown(){
-            lift.setPosition(lowerLift);
+        pusher.setPosition(leftPusherPos);
+        lift.setPosition(lowerLift);
+
+
+
+
     }
     public void toPosition(double pos){
             flap.setPosition(Range.clip(pos,lowerFlap,highFlap));

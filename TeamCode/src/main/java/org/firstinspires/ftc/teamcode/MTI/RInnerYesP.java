@@ -7,10 +7,15 @@ import androidx.annotation.RequiresApi;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
 import org.firstinspires.ftc.teamcode.subSystems.hardwareGenerator;
@@ -22,6 +27,8 @@ import org.firstinspires.ftc.teamcode.subSystems.subsystemGenerator;
 import org.firstinspires.ftc.teamcode.subSystems.vision;
 import org.firstinspires.ftc.teamcode.subSystems.wobble;
 import org.firstinspires.ftc.teamcode.util.wait;
+
+import java.util.Arrays;
 
 @Autonomous
 @Config
@@ -71,7 +78,7 @@ public class RInnerYesP extends LinearOpMode {
         FieldCoordinatesR field = new FieldCoordinatesR();
         State currentState = State.powerShot;
         Powershot currentShot = Powershot.turnL;
-        Pose2d startPose = new Pose2d(-64, 25, 0);
+        Pose2d startPose = new Pose2d(-64, -25, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
 
@@ -79,15 +86,15 @@ public class RInnerYesP extends LinearOpMode {
                 .lineToSplineHeading(field.PRLB)
                 .build();
         Trajectory bb1 = driver.trajectoryBuilder(pShot.end())
-                .splineToLinearHeading(new Pose2d(50,10,Math.PI/8.0),0)
+                .splineToLinearHeading(new Pose2d(50,-10,-Math.PI/8.0),0)
                 .addDisplacementMarker(() -> driver.followTrajectoryAsync(bb2))
                 .build();
         bb2 = driver.trajectoryBuilder(bb1.end())
-                .splineToLinearHeading(new Pose2d(50,30,Math.PI/2.0),0)
+                .splineToLinearHeading(new Pose2d(50,-30,-Math.PI/2.0),0)
                 .addDisplacementMarker(() -> driver.followTrajectoryAsync(bb3))
                 .build();
         bb3 = driver.trajectoryBuilder(bb2.end())
-                .splineToLinearHeading(new Pose2d(50,35,Math.PI/2.0),0)
+                .splineToLinearHeading(new Pose2d(50,-35,-Math.PI/2.0),0)
                 .addDisplacementMarker(() ->
                     driver.followTrajectoryAsync(wobbleTraj))
                 .build();
@@ -100,7 +107,7 @@ public class RInnerYesP extends LinearOpMode {
                 .build();
 
         wobbleB = driver.trajectoryBuilder(bb3.end())
-                .splineToLinearHeading(new Pose2d(50,15,0),0)
+                .splineToLinearHeading(new Pose2d(50,-15,0),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleBI))
                 .build();
@@ -110,7 +117,7 @@ public class RInnerYesP extends LinearOpMode {
                         hammer.down())
                 .build();
         wobbleC = driver.trajectoryBuilder(bb3.end())
-                .lineToLinearHeading(new Pose2d(30,20,Math.PI))
+                .lineToLinearHeading(new Pose2d(30,-20,Math.PI))
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(wobbleCI))
                 .build();
@@ -120,28 +127,34 @@ public class RInnerYesP extends LinearOpMode {
                         hammer.down())
                 .build();
         Trajectory recoveryA = driver.trajectoryBuilder(wobbleA.end())
-                .splineToLinearHeading(new Pose2d(35,18,0),0)
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(new Pose2d(35,-18,0),0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();
         Trajectory recoveryB = driver.trajectoryBuilder(wobbleB.end())
-                .splineToLinearHeading(new Pose2d(26,16,-Math.PI/4.0),0)
+                .splineToLinearHeading(new Pose2d(26,-16,Math.PI/4.0),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(recoveryBI))
                 .build();
         recoveryBI = driver.trajectoryBuilder(recoveryB.end())
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+        ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();
         Trajectory recoveryC = driver.trajectoryBuilder(wobbleC.end())
-                .splineToLinearHeading(new Pose2d(35,18,0),0)
+                .splineToLinearHeading(new Pose2d(35,-18,0),0)
                 .addDisplacementMarker(() ->
                         driver.followTrajectoryAsync(recoveryCI))
                 .build();
         recoveryCI = driver.trajectoryBuilder(recoveryC.end())
-                .splineToLinearHeading(field.PRLB,0)
+                .splineToLinearHeading(field.PRLB,0,new MinVelocityConstraint(
+                        Arrays.asList(new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),new MecanumVelocityConstraint(.7*DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH))
+                ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(() ->
                         driver.turnAsync(field.HM))
                 .build();

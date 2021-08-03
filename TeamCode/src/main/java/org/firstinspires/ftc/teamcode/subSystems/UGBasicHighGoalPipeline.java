@@ -22,8 +22,8 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
     protected double centerX;
     protected double centerY;
 
-    public static int minThreshold = 160, maxThreshold = 200;  //150-175 on min depending on how frquently goal disappears
-    public static double minArea = 0;
+    public static int minThreshold = 145, maxThreshold = 200;  //150-175 on min depending on how frquently goal disappears
+    public static double minArea = 1000;
     private Mat blueThreshold;
     private Mat redThreshold;
 
@@ -98,7 +98,7 @@ public class UGBasicHighGoalPipeline extends OpenCvPipeline {
             return filterContours(i) && appropriateAspect;
         }).collect(Collectors.toList());
 
-        Imgproc.drawContours(input, redContours, -1, new Scalar(255, 255, 0));
+        Imgproc.drawContours(input, redContours, -1, new Scalar(0, 255, 0));
         Imgproc.drawContours(input, blueContours, -1, new Scalar(255, 255, 0));
 
         if (!blueContours.isEmpty()) {

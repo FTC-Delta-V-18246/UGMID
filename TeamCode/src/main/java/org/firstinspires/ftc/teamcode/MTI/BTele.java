@@ -13,6 +13,7 @@
  import com.qualcomm.robotcore.hardware.DcMotorEx;
  import com.qualcomm.robotcore.util.ElapsedTime;
 
+ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  import org.firstinspires.ftc.teamcode.subSystems.PoseStorage;
  import org.firstinspires.ftc.teamcode.subSystems.UGAngleHighGoalPipeline;
@@ -73,6 +74,8 @@
          double cycles = 0;
 
          wait lift = new wait(1,true);
+         wait liftD = new wait(.3,true);
+         liftD.init();
         lift.init();
          waitForStart();
          runtime.reset();
@@ -95,7 +98,7 @@
              switch (shooterState) {
                  case INDEXING:
                      shooter.liftDown();
-                     subs.hammer.lift();
+                     subs.hammer.partialLift();
                      gen.pusherServo.setPosition(hood.leftPusherPos);
                      shooter.timedCancel();
                      if(subs.magTrak.counter(hardReader.curX, hardReader.curV)>2){
@@ -107,12 +110,10 @@
                      subs.hammer.partialLift();
                      shooter.liftUp();
                      if(lift.timeUp()) {
-                         if (autoAngle) {
-                             //shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
-                             shooter.raiseToAngle(shooter.flapH);
-                         } else {
-                             shooter.raiseToAngle(shooter.flapH);
-                         }
+                             shooter.raiseToAngle(shooter.calculateTargetShooterAngle(field.HM, hardReader.curPose, false));
+                             //shooter.raiseToAngle(shooter.flapH);
+                             //shooter.raiseToAngle(shooter.flapH);
+
                          if (!driver.isBusy() && gamepad1.right_bumper) {
                              shooter.timedFireN(hardReader.shooterV);
                          } else {
@@ -125,6 +126,7 @@
                          }
                          lift.deinit();
                      }
+                     liftD.init();
                      if(gamepad1.x){
                          lift.init();
                      }
@@ -160,6 +162,7 @@
                         }
 
                       */
+                     liftD.init();
                      if (gamepad1.right_bumper) {
                          shooter.fire(hardReader.shooterV);
                      }else {
@@ -209,7 +212,7 @@
 
              if(!gamepad1.left_bumper&&shooterState== RobotState.INDEXING){
                  roller.fallOut();
-                 if(lift.timeUp()) {
+                 if(liftD.timeUp()) {
                      roller.upToSpeed();
                  }else{
                      shooter.liftDown();
@@ -234,6 +237,16 @@
                  // driver.turnAsync(field.HM);
 
              }
+             if(gamepad1.dpad_up){
+                 shooter.flapH = .23;
+             }
+             if(gamepad1.dpad_down){
+                 shooter.flapH = .21;
+             }
+             if(gamepad1.dpad_left){
+                 shooter.flapH = .22;
+             }
+
              if (a1.wasJustPressed()) {
                  shooterState = RobotState.WOBBLE;
              }
@@ -247,11 +260,11 @@
              double t1 = runtime.milliseconds() / cycles;
 
              telemetry.addData("Loop time", t1);
-             //telemetry.addData("shooter velo", hardReader.shooterV);
+             telemetry.addData("shooter velo", hardReader.shooterV);
              telemetry.addData("Turning",turning);
              telemetry.addData("blue visible", align.goalline.isBlueVisible());
-          //   telemetry.addData("Intake amps", gen.outerRollerMI.getCurrent(CurrentUnit.AMPS)+gen.outerRollerMII.getCurrent(CurrentUnit.AMPS));
-          //   telemetry.addData("Shooter amps", gen.flyWheelM.getCurrent(CurrentUnit.AMPS)+gen.flyWheelM1.getCurrent(CurrentUnit.AMPS));
+             telemetry.addData("Intake amps", gen.outerRollerMI.getCurrent(CurrentUnit.AMPS)+gen.outerRollerMII.getCurrent(CurrentUnit.AMPS));
+             telemetry.addData("Shooter amps", gen.flyWheelM.getCurrent(CurrentUnit.AMPS)+gen.flyWheelM1.getCurrent(CurrentUnit.AMPS));
           //   telemetry.addData("Drive amps", gen.frontRightM.getCurrent(CurrentUnit.AMPS)+gen.frontLeftM.getCurrent(CurrentUnit.AMPS)+gen.backLeftM.getCurrent(CurrentUnit.AMPS)+gen.backRightM.getCurrent(CurrentUnit.AMPS));
              telemetry.addData("x", hardReader.curPose.getX());
              telemetry.addData("y", hardReader.curPose.getY());

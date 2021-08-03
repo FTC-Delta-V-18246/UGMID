@@ -38,15 +38,6 @@ ElapsedTime runtime = new ElapsedTime();
         hardwareGenerator gen = new hardwareGenerator(this);
         subsystemGenerator subs = new subsystemGenerator(this, gen, runtime);
 
-        msStuckDetectStop = 2500;
-
-        VuforiaLocalizer.Parameters vuforiaParams = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        vuforiaParams.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
-        vuforiaParams.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        VuforiaLocalizer vuforia = ClassFactory.getInstance().createVuforia(vuforiaParams);
-
-        FtcDashboard.getInstance().startCameraStream(vuforia, 0);
-
 
 
 
@@ -64,6 +55,7 @@ ElapsedTime runtime = new ElapsedTime();
         while (!isStopRequested() && opModeIsActive()) {
             camera.updateColor();
             stack = camera.height();
+            //FtcDashboard.getInstance().updateConfig();
             telemetry.addData("Stack height",stack);
             telemetry.update();
     }

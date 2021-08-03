@@ -14,7 +14,7 @@ public class intake {
     public static double O = .64  , I = .18; //outer roller's center should be about 3.25in off the ground
     public static double leftOffset = .02;
     public static double rightOffset = 0;
-    public static double intakePower = .9;
+    public static double intakePower = 1;
     public intake(LinearOpMode opMode, hardwareGenerator gen){
         opModeObj = opMode;
         rollerMotorI = gen.outerRollerMI;

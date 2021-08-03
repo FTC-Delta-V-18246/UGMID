@@ -94,12 +94,12 @@ class UGContourRingPipe(
          * set to var in-case user wants to use their own tuned values
          * stored in YCrCb format **/
 
-        @JvmField var lf = 40.0
-        @JvmField var ls= 135.0
-        @JvmField var lt= 80.0
-        @JvmField var hf = 215.0
-        @JvmField var hs= 185.0
-        @JvmField var ht = 110.0
+        @JvmField var lf = 100.0
+        @JvmField var ls= 130.0
+        @JvmField var lt= 70.0
+        @JvmField var hf = 255.0
+        @JvmField var hs= 180.0
+        @JvmField var ht = 105.0
         val lowerOrange get() = Scalar(lf, ls,lt) //100 160 80    OLD CAMERA: 0 147 0
        val upperOrange get() = Scalar(hf,hs, ht)  //215 185 110    OLD CAMERA: 255 189 120
 
@@ -109,11 +109,11 @@ class UGContourRingPipe(
 
         /** Horizon value in use, anything above this value (less than the value) since
          * (0, 0) is the top left of the camera frame **/
-        var HORIZON: Int = ((100.0 / 320.0) * CAMERA_WIDTH).toInt()
-        var HORIZONX: Int = 10
+       @JvmField var HORIZON: Int = 155
+       @JvmField var HORIZONX: Int = 40
 
         /** algorithmically calculated minimum width for width check based on camera width **/
-         var MIN_WIDTH = 60 //(50.0 / 320.0) * CAMERA_WIDTH
+        @JvmField var MIN_WIDTH = 33 //(50.0 / 320.0) * CAMERA_WIDTH
 
         /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
         const val BOUND_RATIO = 0.7

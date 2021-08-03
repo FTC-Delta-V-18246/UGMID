@@ -70,7 +70,7 @@ public class RFull extends LinearOpMode{
 
         FieldCoordinatesR field = new FieldCoordinatesR();
 
-        Pose2d startPose = new Pose2d(-64,49, 0);
+        Pose2d startPose = new Pose2d(-64,-49, 0);
         driver.setPoseEstimate(startPose);
         hardReader.curPose = startPose;
 
@@ -90,7 +90,7 @@ public class RFull extends LinearOpMode{
                 .lineToSplineHeading(field.WAI)
                 .build();
         Trajectory wobbleA2 = driver.trajectoryBuilder(wobbleA.end())
-                .lineToSplineHeading(new Pose2d(-34, 26, 0))
+                .lineToSplineHeading(new Pose2d(-34, -26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
                 .build();
@@ -117,7 +117,7 @@ public class RFull extends LinearOpMode{
                 .lineToLinearHeading(field.WBI)
                 .build();
         Trajectory wobbleB2 = driver.trajectoryBuilder(wobbleB.end())
-                .lineToSplineHeading(new Pose2d(-34, 26, 0))
+                .lineToSplineHeading(new Pose2d(-34, -26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
                 .build();
@@ -176,7 +176,7 @@ public class RFull extends LinearOpMode{
                 .lineToSplineHeading(field.WCI)
                 .build();
         Trajectory wobbleC2 = driver.trajectoryBuilder(wobbleC.end())
-                .lineToSplineHeading(new Pose2d(-34, 26, 0))
+                .lineToSplineHeading(new Pose2d(-34, -26, 0))
                 .addDisplacementMarker(()->
                         hammer.down())
                 .build();
